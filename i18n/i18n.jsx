@@ -19,6 +19,8 @@ import tr from './tr.json';
 import uk from './uk.json';
 import zhTW from './zh-TW.json';
 import zhCN from './zh-CN.json';
+import vi from './vi.json';
+
 
 import {getConfig} from 'mattermost-redux/selectors/entities/general';
 
@@ -133,6 +135,12 @@ const languages = {
         name: '日本語',
         order: 17,
         url: ja,
+    },
+    vi: {
+        value: 'vi',
+        name: 'Tiếng Việt',
+        order: 18,
+        url: vi,
     },
 };
 
