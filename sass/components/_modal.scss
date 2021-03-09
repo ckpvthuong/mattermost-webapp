@@ -821,6 +821,12 @@
                 opacity: 0.6;
                 font-weight: 400;
             }
+
+            .more-modal__name_status {
+                font-style: italic;
+                color: var(--link-color);
+            }
+
         }
     }
 

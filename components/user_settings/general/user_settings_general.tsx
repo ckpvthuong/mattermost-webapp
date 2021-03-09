@@ -83,6 +83,10 @@ const holders = defineMessages({
         id: t('user.settings.general.position'),
         defaultMessage: 'Position',
     },
+    statusString: {
+        id: t('user.settings.general.status_string'),
+        defaultMessage: 'Status',
+    },
 });
 
 export type Props = {
@@ -136,6 +140,7 @@ type State = {
     firstName: string;
     lastName: string;
     nickname: string;
+    statusString: string;
     position: string;
     originalEmail: string;
     email: string;
@@ -239,6 +244,22 @@ export class UserSettingsGeneralTab extends React.Component<Props, State> {
         user.nickname = nickname;
 
         trackEvent('settings', 'user_settings_update', {field: 'nickname'});
+
+        this.submitUser(user, false);
+    }
+
+    submitStatusString = () => {
+        const user = Object.assign({}, this.props.user);
+        const statusString = this.state.statusString.trim();
+
+        if (user.status_string === statusString) {
+            this.updateSection('');
+            return;
+        }
+
+        user.status_string = statusString;
+
+        trackEvent('settings', 'user_settings_update', {field: 'status_string'});
 
         this.submitUser(user, false);
     }
@@ -412,6 +433,10 @@ export class UserSettingsGeneralTab extends React.Component<Props, State> {
         this.setState({nickname: e.target.value});
     }
 
+    updateStatusString = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({statusString: e.target.value});
+    }
+
     updatePosition = (e: React.ChangeEvent<HTMLInputElement>) => {
         this.setState({position: e.target.value});
     }
@@ -453,6 +478,7 @@ export class UserSettingsGeneralTab extends React.Component<Props, State> {
             firstName: user.first_name,
             lastName: user.last_name,
             nickname: user.nickname,
+            statusString: user.status_string,
             position: user.position,
             originalEmail: user.email,
             email: '',
@@ -1051,6 +1077,96 @@ export class UserSettingsGeneralTab extends React.Component<Props, State> {
             );
         }
 
+        let statusStringSection;
+        if (this.props.activeSection === 'statusString') {
+            let submit = null;
+            let extraInfo;
+            let statusLabel: JSX.Element|string = (
+                <FormattedMessage
+                    id='user.settings.general.status_string'
+                    defaultMessage='Status'
+                />
+            );
+            if (Utils.isMobile()) {
+                statusLabel = '';
+            }
+
+            inputs.push(
+                <div
+                    key='statusStringSetting'
+                    className='form-group'
+                >
+                    <label className='col-sm-5 control-label'>{statusLabel}</label>
+                    <div className='col-sm-7'>
+                        <input
+                            id='statusString'
+                            
+                            autoFocus={true}
+                            className='form-control'
+                            type='text'
+                            onChange={this.updateStatusString}
+                            value={this.state.statusString}
+                            maxLength={Constants.MAX_STATUS_STRING}
+                            autoCapitalize='off'
+                            aria-label={formatMessage({id: 'user.settings.general.status_string', defaultMessage: 'Status'})}
+                        />
+                    </div>
+                </div>,
+            );
+            extraInfo = (
+                <span>
+                    <FormattedMessage
+                        id='user.settings.general.statusStringInfo'
+                        defaultMessage="What's on your mind. Lets everyone to know"
+                    />
+                </span>
+            );
+                submit = this.submitStatusString;
+            
+
+            statusStringSection = (
+                <SettingItemMax
+                    title={formatMessage(holders.statusString)}
+                    inputs={inputs}
+                    submit={submit}
+                    saving={this.state.sectionIsSaving}
+                    serverError={serverError}
+                    clientError={clientError}
+                    updateSection={this.updateSection}
+                    extraInfo={extraInfo}
+                />
+            );
+        } else {
+            let describe: JSX.Element|string = '';
+            if (user.status_string) {
+                describe = user.status_string;
+            } else {
+                describe = (
+                    <FormattedMessage
+                        id='user.settings.general.emptyStatusString'
+                        defaultMessage="Click 'Edit' to add a status"
+                    />
+                );
+                if (Utils.isMobile()) {
+                    describe = (
+                        <FormattedMessage
+                            id='user.settings.general.mobile.emptyStatusString'
+                            defaultMessage='Click to add a status'
+                        />
+                    );
+                }
+            }
+
+            statusStringSection = (
+                <SettingItemMin
+                    title={formatMessage(holders.statusString)}
+                    describe={describe}
+                    section={'statusString'}
+                    updateSection={this.updateSection}
+                />
+            );
+        }
+
         let usernameSection;
         if (this.props.activeSection === 'username') {
             let extraInfo;
@@ -1235,6 +1351,8 @@ export class UserSettingsGeneralTab extends React.Component<Props, State> {
             );
         }
 
+        
+
         const emailSection = this.createEmailSection();
 
         let pictureSection;
@@ -1368,6 +1486,8 @@ export class UserSettingsGeneralTab extends React.Component<Props, State> {
                         />
                     </h3>
                     <div className='divider-dark first'/>
+                    {statusStringSection}
+                    <div className='divider-light'/>
                     {nameSection}
                     <div className='divider-light'/>
                     {usernameSection}

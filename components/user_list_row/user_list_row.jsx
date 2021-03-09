@@ -106,15 +106,14 @@ export default class UserListRow extends React.PureComponent {
                         <UserProfile
                             userId={this.props.user.id}
                             hasMention={true}
-                            displayUsername={true}
+                            displayUsername={false}
                         />
                         <Nbsp/>
                         {
-                            this.props.user.first_name || this.props.user.last_name || this.props.user.nickname ?
-                                '-' : null
+                            this.props.user.status_string &&
+                            <span className='more-modal__name_status'> - {this.props.user.status_string}</span>
                         }
                         <Nbsp/>
-                        {Utils.displayFullAndNicknameForUser(this.props.user)}
                     </div>
                     <div
                         id={userCountEmail}

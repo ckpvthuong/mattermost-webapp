@@ -8,10 +8,18 @@ import {getUser, makeGetDisplayName} from 'mattermost-redux/selectors/entities/u
 import {GlobalState} from 'mattermost-redux/types/store';
 
 import UserProfile from './user_profile';
+import { bindActionCreators, Dispatch, ActionCreatorsMapObject } from 'redux';
+import {openModal} from 'actions/views/modals';
+import {GenericAction, ActionFunc} from 'mattermost-redux/types/actions';
 
 type OwnProps = {
     userId: string;
 }
+type Actions = {
+    openModal: (modalData: {modalId: string; dialogType: any; dialogProps?: any}) => Promise<{
+        data: boolean;
+    }>;
+};
 
 function makeMapStateToProps() {
     const getDisplayName = makeGetDisplayName();
@@ -24,4 +32,12 @@ function makeMapStateToProps() {
     };
 }
 
-export default connect(makeMapStateToProps)(UserProfile);
+function mapDispatchToProps(dispatch: Dispatch) {
+    return {
+        actions: bindActionCreators<ActionCreatorsMapObject<ActionFunc>, Actions>({
+            openModal
+        }, dispatch),
+    };
+  }
+
+export default connect(makeMapStateToProps, mapDispatchToProps)(UserProfile);

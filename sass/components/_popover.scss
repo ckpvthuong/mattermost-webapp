@@ -203,6 +203,49 @@
 .user-profile-popover .user-popover__username:only-child > a{
     max-width: 100%;
 }
+
+.user-profile-modal {
+    width: 100%;
+}
+
+.user-profile-modal .avatar-container {
+    display: flex;
+    justify-content: center;
+}
+
+.user-profile-modal .center-container {
+    display: flex;
+    justify-content: center;
+}
+
+.user-profile-modal .fullname {
+    margin-top: 15px;
+}
+
+
+.user-profile-modal .content-row {
+   
+    margin-bottom: 15px;
+}
+
+.user-profile-modal .row-label {
+    font-weight: 600;
+    width: 30%;
+    display: inline-block;
+    box-sizing: border-box;
+}
+
+.user-profile-modal .left-text {
+    margin-left: 10px;
+    display: inline;
+}
+
+.user-profile-modal .status-string {
+    font-style: italic;
+    color: var(--link-color);
+}
+
+
 .user-profile-popover .Avatar {
     margin: 5px auto;
     display: block;
@@ -257,7 +300,7 @@
 
 
 .user-popover__email {
-    display: block;
+    display: inline;
     max-width: 300px;
     overflow: hidden;
     text-overflow: ellipsis;

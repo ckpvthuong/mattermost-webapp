@@ -281,6 +281,7 @@ export const ModalIdentifiers = {
     CLOUD_PURCHASE: 'cloud_purchase',
     COMMERCIAL_SUPPORT: 'commercial_support',
     NO_INTERNET_CONNECTION: 'no_internet_connection',
+    USER_PROFILE: 'user_profile'
 };
 
 export const UserStatuses = {
@@ -1524,6 +1525,7 @@ export const Constants = {
     MIN_PASSWORD_LENGTH: 5,
     MAX_PASSWORD_LENGTH: 64,
     MAX_POSITION_LENGTH: 128,
+    MAX_STATUS_STRING: 128,
     MIN_TRIGGER_LENGTH: 1,
     MAX_TRIGGER_LENGTH: 128,
     MAX_SITENAME_LENGTH: 30,

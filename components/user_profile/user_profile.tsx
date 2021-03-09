@@ -11,6 +11,8 @@ import OverlayTrigger, {BaseOverlayTrigger} from 'components/overlay_trigger';
 import ProfilePopover from 'components/profile_popover';
 import BotBadge from 'components/widgets/badges/bot_badge';
 import GuestBadge from 'components/widgets/badges/guest_badge';
+import {ModalIdentifiers} from 'utils/constants';
+import UserProfileModal from 'components/user_profile_modal';
 
 export type UserProfileProps = {
     userId: string;
@@ -25,6 +27,23 @@ export type UserProfileProps = {
     hideStatus?: boolean;
     isRHS?: boolean;
     overwriteImage?: React.ReactNode;
+    actions: {
+        openModal: (modalData: {modalId: string; dialogType: any; dialogProps?: any}) => Promise<{
+            data: boolean;
+        }>;
+    };
+}
+
+
+function normalizeName (str?: string){
+    if(!str) return "";
+    let arr = str.split(" ");
+    let rs = ""
+
+    for (let word of arr){
+        rs += word[0].toUpperCase() + word.slice(1).toLowerCase() + " ";
+    }
+    return rs.trim()
 }
 
 export default class UserProfile extends PureComponent<UserProfileProps> {
@@ -50,6 +69,24 @@ export default class UserProfile extends PureComponent<UserProfileProps> {
         this.overlay = ref;
     }
 
+    showUserProfileModal = (profileImg: string) => {
+        this.props.actions.openModal({
+            modalId: ModalIdentifiers.USER_PROFILE,
+            dialogType: UserProfileModal,
+            dialogProps: {
+                userId: this.props.userId,
+                isBusy: this.props.isBusy,
+                hide: this.hideProfilePopover,
+                isRHS: this.props.isRHS,
+                hasMention: this.props.hasMention,
+                overwriteIcon: this.props.overwriteIcon,
+                overwriteName: this.props.overwriteName,
+                src: profileImg
+            }
+        })
+    }
+
+
     render(): React.ReactNode {
         const {
             disablePopover,
@@ -69,7 +106,7 @@ export default class UserProfile extends PureComponent<UserProfileProps> {
         if (user && displayUsername) {
             name = `@${(user.username)}`;
         } else {
-            name = overwriteName || displayName || '...';
+            name = overwriteName || normalizeName(displayName) || '...';
         }
 
         const ariaName: string = typeof name === 'string' ? name.toLowerCase() : '';
@@ -90,25 +127,8 @@ export default class UserProfile extends PureComponent<UserProfileProps> {
 
         return (
             <React.Fragment>
-                <OverlayTrigger
-                    ref={this.setOverlaynRef}
-                    trigger='click'
-                    placement={placement}
-                    rootClose={true}
-                    overlay={
-                        <ProfilePopover
-                            className='user-profile-popover'
-                            userId={userId}
-                            src={profileImg}
-                            isBusy={isBusy}
-                            hide={this.hideProfilePopover}
-                            hideStatus={hideStatus}
-                            isRHS={isRHS}
-                            hasMention={hasMention}
-                            overwriteName={overwriteName}
-                            overwriteIcon={overwriteIcon}
-                        />
-                    }
+                <div
+                    onClick={() => this.showUserProfileModal(profileImg)}
                 >
                     <button
                         aria-label={ariaName}
@@ -116,7 +136,7 @@ export default class UserProfile extends PureComponent<UserProfileProps> {
                     >
                         {name}
                     </button>
-                </OverlayTrigger>
+                </div>
                 <BotBadge
                     show={Boolean(user && user.is_bot)}
                     className='badge-popoverlist'

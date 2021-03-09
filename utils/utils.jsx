@@ -1350,14 +1350,17 @@ export function changeColor(colourIn, amt) {
 
     return rgb;
 }
+function normalizeName(string){
+    return string[0].toUpperCase() + string.slice(1).toLowerCase();
+  }
 
 export function getFullName(user) {
     if (user.first_name && user.last_name) {
-        return user.first_name + ' ' + user.last_name;
+        return normalizeName(user.first_name) + ' ' + normalizeName(user.last_name);
     } else if (user.first_name) {
-        return user.first_name;
+        return normalizeName(user.first_name);
     } else if (user.last_name) {
-        return user.last_name;
+        return normalizeName(user.last_name);
     }
 
     return '';

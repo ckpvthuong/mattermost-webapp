@@ -4098,7 +4098,7 @@
   "userGuideHelp.reportAProblem": "Báo cáo sự cố",
   "user_list.notFound": "Không tìm thấy người dùng nào",
   "user_profile.account.editSettings": "Chỉnh sửa Cài đặt Tài khoản",
-  "user_profile.account.localTime": "Giờ địa phương",
+  "user_profile.account.localTime": "Giờ địa phương: ",
   "user_profile.add_user_to_channel": "Thêm vào kênh",
   "user_profile.add_user_to_channel.icon": "Thêm người dùng vào biểu tượng kênh",
   "user_profile.send.dm": "Gửi tin nhắn",
@@ -4125,5 +4125,9 @@
   "widgets.users_emails_input.loading": "Đang tải",
   "widgets.users_emails_input.no_user_found_matching": "Không tìm thấy ai phù hợp **{text} **, nhập địa chỉ email",
   "widgets.users_emails_input.valid_email": "Thêm **{email} **",
-  "yourcomputer": "Máy tính của bạn"
+  "yourcomputer": "Máy tính của bạn",
+  "user_profile_modal.modalTitle" : "Thông tin cá nhân",
+  "user.settings.general.status_string": "Trạng thái",
+  "user.settings.general.emptyStatusString" : "Click để chỉnh sửa trạng thái",
+  "user.settings.general.statusStringInfo": "Hãy cho người biết bạn đang nghĩ gì !"
 }

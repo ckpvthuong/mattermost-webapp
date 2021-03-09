@@ -7,6 +7,9 @@ import OverlayTrigger, {BaseOverlayTrigger} from 'components/overlay_trigger';
 import ProfilePopover from 'components/profile_popover';
 import StatusIcon from 'components/status_icon';
 import Avatar from 'components/widgets/users/avatar';
+import {ModalIdentifiers} from 'utils/constants';
+import {trackEvent} from 'actions/telemetry_actions';
+import UserProfileModal from 'components/user_profile_modal';
 
 import './profile_picture.scss';
 
@@ -28,9 +31,16 @@ type Props = {
     wrapperClass?: string;
     overwriteIcon?: string;
     overwriteName?: string;
+    actions: {
+        openModal: (modalData: {modalId: string; dialogType: any; dialogProps?: any}) => Promise<{
+            data: boolean;
+        }>;
+    };
 }
 
+
 export default class ProfilePicture extends React.PureComponent<Props> {
+
     public static defaultProps = {
         size: 'md',
         isRHS: false,
@@ -39,12 +49,33 @@ export default class ProfilePicture extends React.PureComponent<Props> {
         wrapperClass: '',
     };
 
+   
+
     overlay = React.createRef<MMOverlayTrigger>();
 
     public hideProfilePopover = () => {
         if (this.overlay.current) {
             this.overlay.current.hide();
         }
+    }
+
+    public showUserProfileModal = () => {
+        this.props.actions.openModal({
+            modalId: ModalIdentifiers.USER_PROFILE,
+            dialogType: UserProfileModal,
+            dialogProps: {
+                userId: this.props.userId,
+                isBusy: this.props.isBusy,
+                hide: this.hideProfilePopover,
+                isRHS: this.props.isRHS,
+                hasMention: this.props.hasMention,
+                overwriteIcon: this.props.overwriteIcon,
+                overwriteName: this.props.overwriteName,
+                profileSrc: this.props.profileSrc,
+                src: this.props.src
+            }
+        });
+        //trackEvent('ui', 'ui_channels_create_channel_v2');
     }
 
     public render() {
@@ -58,28 +89,10 @@ export default class ProfilePicture extends React.PureComponent<Props> {
 
         if (this.props.userId) {
             return (
-                <OverlayTrigger
-                    ref={this.overlay}
-                    trigger='click'
-                    placement='right'
-                    rootClose={true}
-                    overlay={
-                        <ProfilePopover
-                            className='user-profile-popover'
-                            userId={this.props.userId}
-                            src={profileSrc}
-                            isBusy={this.props.isBusy}
-                            hide={this.hideProfilePopover}
-                            isRHS={this.props.isRHS}
-                            hasMention={this.props.hasMention}
-                            overwriteIcon={this.props.overwriteIcon}
-                            overwriteName={this.props.overwriteName}
-                        />
-                    }
-                >
-                    <button
+                    <div
                         className={`status-wrapper style--none ${this.props.wrapperClass}`}
                         tabIndex={-1}
+                        onClick={this.showUserProfileModal}
                     >
                         <span className={profileIconClass}>
                             <Avatar
@@ -89,8 +102,7 @@ export default class ProfilePicture extends React.PureComponent<Props> {
                             />
                         </span>
                         <StatusIcon status={this.props.status}/>
-                    </button>
-                </OverlayTrigger>
+                    </div>
             );
         }
         return (
