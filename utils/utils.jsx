@@ -1350,7 +1350,8 @@ export function changeColor(colourIn, amt) {
 
     return rgb;
 }
-function normalizeName(string){
+export function normalizeName(string){
+    if(!string) return
     return string[0].toUpperCase() + string.slice(1).toLowerCase();
   }
 
@@ -1365,6 +1366,53 @@ export function getFullName(user) {
 
     return '';
 }
+
+export function getNameFromEmail(email) {
+    return email.substring(0, email.lastIndexOf("@"))
+}
+
+export function randomUserName(length){
+   var result           = '';
+   var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+   var charactersLength = characters.length;
+   for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+   }
+   return result;
+}
+
+export function createUserName(firstName, lastName, email) {
+    firstName = firstName || ""
+    lastName = lastName || ""
+    email = email || ""
+
+    const emailName = getNameFromEmail(email).replace(/\W/g,'').toLowerCase()
+    const userNameFromName = (firstName+lastName).replace(/\W/g, '').toLowerCase()
+
+    
+
+    let username;
+    if (!isValidUsername(userNameFromName)) {
+        username = userNameFromName
+    } else if (!isValidUsername(emailName)) {
+        username = emailName
+    } else {
+        let randomUserName = "" 
+        while(isValidUsername(randomUserName)){
+            randomUserName = randomUserName(Constants.MIN_USERNAME_LENGTH).toLowerCase()
+        }
+        username = randomUserName
+    }
+   
+    return username
+
+}
+
+export function getRandomIntInclusive(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
+  }
 
 export function getDisplayName(user) {
     if (user.nickname && user.nickname.trim().length > 0) {

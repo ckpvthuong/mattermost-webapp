@@ -60,6 +60,8 @@ export default class SignupEmail extends React.PureComponent {
 
         this.emailRef = React.createRef();
         this.nameRef = React.createRef();
+        this.firstNameRef = React.createRef();
+        this.lastNameRef =  React.createRef();
         this.passwordRef = React.createRef();
     }
 
@@ -181,46 +183,47 @@ export default class SignupEmail extends React.PureComponent {
             return false;
         }
 
-        const providedUsername = this.nameRef.current.value.trim().toLowerCase();
-        if (!providedUsername) {
-            this.setState({
-                nameError: (<FormattedMessage id='signup_user_completed.required'/>),
-                emailError: '',
-                passwordError: '',
-                serverError: '',
-            });
-            return false;
-        }
+        
+        // const providedUsername = this.nameRef.current.value.trim().toLowerCase();
+        // if (!providedUsername) {
+        //     this.setState({
+        //         nameError: (<FormattedMessage id='signup_user_completed.required'/>),
+        //         emailError: '',
+        //         passwordError: '',
+        //         serverError: '',
+        //     });
+        //     return false;
+        // }
 
-        const usernameError = Utils.isValidUsername(providedUsername);
-        if (usernameError) {
-            let errObj;
-            if (usernameError.id === ValidationErrors.RESERVED_NAME) {
-                errObj = {
-                    nameError: (<FormattedMessage id='signup_user_completed.reserved'/>),
-                    emailError: '',
-                    passwordError: '',
-                    serverError: '',
-                };
-            } else {
-                errObj = {
-                    nameError: (
-                        <FormattedMessage
-                            id='signup_user_completed.usernameLength'
-                            values={{
-                                min: Constants.MIN_USERNAME_LENGTH,
-                                max: Constants.MAX_USERNAME_LENGTH,
-                            }}
-                        />
-                    ),
-                    emailError: '',
-                    passwordError: '',
-                    serverError: '',
-                };
-            }
-            this.setState(errObj);
-            return false;
-        }
+        // const usernameError = Utils.isValidUsername(providedUsername);
+        // if (usernameError) {
+        //     let errObj;
+        //     if (usernameError.id === ValidationErrors.RESERVED_NAME) {
+        //         errObj = {
+        //             nameError: (<FormattedMessage id='signup_user_completed.reserved'/>),
+        //             emailError: '',
+        //             passwordError: '',
+        //             serverError: '',
+        //         };
+        //     } else {
+        //         errObj = {
+        //             nameError: (
+        //                 <FormattedMessage
+        //                     id='signup_user_completed.usernameLength'
+        //                     values={{
+        //                         min: Constants.MIN_USERNAME_LENGTH,
+        //                         max: Constants.MAX_USERNAME_LENGTH,
+        //                     }}
+        //                 />
+        //             ),
+        //             emailError: '',
+        //             passwordError: '',
+        //             serverError: '',
+        //         };
+        //     }
+        //     this.setState(errObj);
+        //     return false;
+        // }
 
         const providedPassword = this.passwordRef.current.value;
         const {valid, error} = Utils.isValidPassword(providedPassword, this.props.passwordConfig);
@@ -237,7 +240,9 @@ export default class SignupEmail extends React.PureComponent {
         return true;
     }
 
-    handleSubmit = (e) => {
+
+
+    handleSubmit = async (e) => {
         e.preventDefault();
         trackEvent('signup_email', 'click_create_account');
 
@@ -255,17 +260,46 @@ export default class SignupEmail extends React.PureComponent {
                 isSubmitting: true,
             });
 
+            const email = this.emailRef.current.value.trim()
+            const firstName = Utils.normalizeName(this.firstNameRef.current.value.trim())
+            const lastName = Utils.normalizeName(this.lastNameRef.current.value.trim())
+            const userName = Utils.createUserName(firstName, lastName, email)
             const user = {
-                email: this.emailRef.current.value.trim(),
-                username: this.nameRef.current.value.trim().toLowerCase(),
+                email: email,
+                first_name: firstName,
+                last_name: lastName,
+                username: userName,
                 password: this.passwordRef.current.value,
                 allow_marketing: true,
             };
 
             const redirectTo = (new URLSearchParams(this.props.location.search)).get('redirect_to');
 
-            this.props.actions.createUser(user, this.state.token, this.state.inviteId, redirectTo).then((result) => {
+        //    while(true){
+        //     this.props.actions.createUser(user, this.state.token, this.state.inviteId, redirectTo).then((result) => {
+        //         if (result.error) {
+                   
+        //             if (result.error.server_error_id === "app.user.save.username_exists.app_error") continue;
+        //             this.setState({
+        //                 serverError: result.error.message,
+        //                 isSubmitting: false,
+        //             });
+        //             return;
+        //         }
+        //         this.handleSignupSuccess(user, result.data);
+        //         return;
+        //     });
+
+        //    }
+
+            while(true){
+                const result = await this.props.actions.createUser(user, this.state.token, this.state.inviteId, redirectTo)
+
                 if (result.error) {
+                    if (result.error.server_error_id === "app.user.save.username_exists.app_error") {
+                        user.username += Utils.getRandomIntInclusive(0,10000)
+                        continue
+                    }
                     this.setState({
                         serverError: result.error.message,
                         isSubmitting: false,
@@ -274,7 +308,9 @@ export default class SignupEmail extends React.PureComponent {
                 }
 
                 this.handleSignupSuccess(user, result.data);
-            });
+                return;
+            }
+
         }
     }
 
@@ -298,24 +334,38 @@ export default class SignupEmail extends React.PureComponent {
             emailDivStyle += ' has-error';
         }
 
-        let nameError = null;
-        let nameHelpText = (
-            <span
-                id='valid_name'
-                className='help-block'
-            >
-                <FormattedMessage
-                    id='signup_user_completed.userHelp'
-                    defaultMessage='You can use lowercase letters, numbers, periods, dashes, and underscores.'
-                />
-            </span>
-        );
-        let nameDivStyle = 'form-group';
-        if (this.state.nameError) {
-            nameError = <label className='control-label'>{this.state.nameError}</label>;
-            nameHelpText = '';
-            nameDivStyle += ' has-error';
-        }
+        // let nameError = null;
+        // let nameHelpText = (
+        //     <span
+        //         id='valid_name'
+        //         className='help-block'
+        //     >
+        //         <FormattedMessage
+        //             id='signup_user_completed.userHelp'
+        //             defaultMessage='You can use lowercase letters, numbers, periods, dashes, and underscores.'
+        //         />
+        //     </span>
+        // );
+        // let nameDivStyle = 'form-group';
+        // if (this.state.nameError) {
+        //     nameError = <label className='control-label'>{this.state.nameError}</label>;
+        //     nameHelpText = '';
+        //     nameDivStyle += ' has-error';
+        // }
+
+        let firstNameDivStyle = 'form-group';
+        // if (this.state.firstNameError) {
+        //     firstNameError = <label className='control-label'>{this.state.firstNameError}</label>;
+        //     firstNameHelpText = '';
+        //     firstNameDivStyle += ' has-error';
+        // }
+
+        let lastNameDivStyle = 'form-group';
+        // if (this.state.lastNameError) {
+        //     lastNameError = <label className='control-label'>{this.state.lastNameError}</label>;
+        //     lastNameHelpText = '';
+        //     lastNameDivStyle += ' has-error';
+        // }
 
         let passwordError = null;
         let passwordDivStyle = 'form-group';
@@ -374,27 +424,45 @@ export default class SignupEmail extends React.PureComponent {
                     </div>
                     {yourEmailIs}
                     <div className='mt-8'>
-                        <h5 id='name_label'>
+                        <h5 id='first_name_label'>
                             <strong>
                                 <FormattedMessage
-                                    id='signup_user_completed.chooseUser'
-                                    defaultMessage='Choose your username'
+                                    id='signup_user_completed.enterFirstName'
+                                    defaultMessage='Enter your first name'
                                 />
                             </strong>
                         </h5>
-                        <div className={nameDivStyle}>
+                        <div className={firstNameDivStyle}>
                             <input
-                                id='name'
+                                id='first_name'
                                 type='text'
-                                ref={this.nameRef}
+                                ref={this.firstNameRef}
                                 className='form-control'
                                 placeholder=''
-                                maxLength={Constants.MAX_USERNAME_LENGTH}
                                 spellCheck='false'
-                                autoCapitalize='off'
+                                autoCapitalize='on'
                             />
-                            {nameError}
-                            {nameHelpText}
+                        </div>
+                    </div>
+                    <div className='mt-8'>
+                        <h5 id='last_name_label'>
+                            <strong>
+                                <FormattedMessage
+                                    id='signup_user_completed.enterLastName'
+                                    defaultMessage='Enter your last name'
+                                />
+                            </strong>
+                        </h5>
+                        <div className={lastNameDivStyle}>
+                            <input
+                                id='last_name'
+                                type='text'
+                                ref={this.lastNameRef}
+                                className='form-control'
+                                placeholder=''
+                                spellCheck='false'
+                                autoCapitalize='on'
+                            />
                         </div>
                     </div>
                     <div className='mt-8'>
@@ -549,3 +617,28 @@ export default class SignupEmail extends React.PureComponent {
     }
 }
 /* eslint-enable react/no-string-refs */
+
+{/* <div className='mt-8'>
+                        <h5 id='name_label'>
+                            <strong>
+                                <FormattedMessage
+                                    id='signup_user_completed.chooseUser'
+                                    defaultMessage='Choose your username'
+                                />
+                            </strong>
+                        </h5>
+                        <div className={nameDivStyle}>
+                            <input
+                                id='name'
+                                type='text'
+                                ref={this.nameRef}
+                                className='form-control'
+                                placeholder=''
+                                maxLength={Constants.MAX_USERNAME_LENGTH}
+                                spellCheck='false'
+                                autoCapitalize='off'
+                            />
+                            {nameError}
+                            {nameHelpText}
+                        </div>
+                    </div> */}
