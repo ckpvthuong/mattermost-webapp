@@ -6,22 +6,26 @@ import React from 'react';
 import {Button, Tooltip} from 'react-bootstrap';
 import {FormattedMessage} from 'react-intl';
 
-import {Team} from 'mattermost-redux/types/teams';
+import {Team, TeamSearchOpts} from 'mattermost-redux/types/teams';
 import {Client4Error} from 'mattermost-redux/types/client4';
 
+import {getCurrentUser} from 'mattermost-redux/selectors/entities/users';
+
+import store from 'stores/redux_store.jsx';
 import {trackEvent} from 'actions/telemetry_actions.jsx';
 
 import Constants from 'utils/constants.jsx';
 import * as URL from 'utils/url';
 import logoImage from 'images/logo.png';
 
-import FormattedMarkdownMessage from 'components/formatted_markdown_message.jsx';
+// import FormattedMarkdownMessage from 'components/formatted_markdown_message.jsx';
 import OverlayTrigger from 'components/overlay_trigger';
 
 type State = {
     isLoading: boolean;
     nameError: string | JSX.Element;
     teamURL: string;
+    teamName: string;
 }
 
 type Props = {
@@ -50,11 +54,13 @@ type Props = {
      * Action creator to create a new team
      */
         createTeam: (team: Team) => Promise<{data: Team; error: Client4Error}>;
+        searchTeams: (term: string, opts: TeamSearchOpts) => Promise<{data: any}>;
     };
     history: {
         push(path: string): void;
     };
 }
+const getState = store.getState;
 
 export default class TeamUrl extends React.PureComponent<Props, State> {
     constructor(props: Props) {
@@ -64,11 +70,36 @@ export default class TeamUrl extends React.PureComponent<Props, State> {
             nameError: '',
             isLoading: false,
             teamURL: props.state.team.name,
+            teamName: '',
         };
+    }
+
+    public getTeamName = async () => {
+        const state = getState();
+        const currentUser = getCurrentUser(state);
+
+        let teamName = `${currentUser.roles.includes('system_admin') ? 'o' : 'u'}-uet`;
+
+        const teamList = await this.props.actions.searchTeams('', {});
+
+        if (teamList?.data && teamName[0] === 'o') {
+            const teamListWithName = teamList.data.map((value: any) => value.name).filter((value: any) => value.includes('o-uet'));
+
+            teamName = `${teamName}-${teamListWithName.length + 1}`;
+        } else if (teamName[0] === 'u') {
+            teamName = `${teamName}-${Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5)}`;
+        } else {
+            teamName = `${teamName}-1`;
+        }
+
+        // eslint-disable-next-line no-console
+        console.log(teamName);
+        this.setState({teamName});
     }
 
     public componentDidMount() {
         trackEvent('signup', 'signup_team_02_url');
+        this.getTeamName();
     }
 
     public submitBack = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -122,22 +153,22 @@ export default class TeamUrl extends React.PureComponent<Props, State> {
             return;
         }
 
-        for (let index = 0; index < Constants.RESERVED_TEAM_NAMES.length; index++) {
-            if (cleanedName.indexOf(Constants.RESERVED_TEAM_NAMES[index]) === 0) {
-                this.setState({nameError: (
-                    <FormattedMarkdownMessage
-                        id='create_team.team_url.taken'
-                        defaultMessage='This URL [starts with a reserved word](!https://docs.mattermost.com/help/getting-started/creating-teams.html#team-url) or is unavailable. Please try another.'
-                    />),
-                });
-                return;
-            }
-        }
+        // for (let index = 0; index < Constants.RESERVED_TEAM_NAMES.length; index++) {
+        //     if (cleanedName.indexOf(Constants.RESERVED_TEAM_NAMES[index]) === 0) {
+        //         this.setState({nameError: (
+        //             <FormattedMarkdownMessage
+        //                 id='create_team.team_url.taken'
+        //                 defaultMessage='This URL [starts with a reserved word](!https://docs.mattermost.com/help/getting-started/creating-teams.html#team-url) or is unavailable. Please try another.'
+        //             />),
+        //         });
+        //         return;
+        //     }
+        // }
 
         this.setState({isLoading: true});
         const teamSignup = JSON.parse(JSON.stringify(this.props.state));
         teamSignup.team.type = 'O';
-        teamSignup.team.name = name;
+        teamSignup.team.name = this.state.teamName;
 
         const checkIfTeamExistsData: { exists: boolean } = await checkIfTeamExists(name);
         const exists = checkIfTeamExistsData.exists;
@@ -222,16 +253,17 @@ export default class TeamUrl extends React.PureComponent<Props, State> {
                         <div className='row'>
                             <div className='col-sm-11'>
                                 <div className='input-group input-group--limit'>
-                                    <OverlayTrigger
+                                    {this.state.teamName !== '' && (<OverlayTrigger
                                         delayShow={Constants.OVERLAY_TIME_DELAY}
                                         placement='top'
                                         overlay={urlTooltip}
+                                    // eslint-disable-next-line react/jsx-closing-bracket-location
                                     >
                                         <span className='input-group-addon'>
-                                            {title}
+                                            {title + this.state.teamName}
                                         </span>
-                                    </OverlayTrigger>
-                                    <input
+                                    </OverlayTrigger>)}
+                                    {/* <input
                                         id='teamURLInput'
                                         type='text'
                                         className='form-control'
@@ -242,13 +274,13 @@ export default class TeamUrl extends React.PureComponent<Props, State> {
                                         onFocus={this.handleFocus}
                                         onChange={this.handleTeamURLInputChange}
                                         spellCheck='false'
-                                    />
+                                    /> */}
                                 </div>
                             </div>
                         </div>
                         {nameError}
                     </div>
-                    <p>
+                    {/* <p>
                         <FormattedMessage
                             id='create_team.team_url.webAddress'
                             defaultMessage='Choose the web address of your new team:'
@@ -273,7 +305,7 @@ export default class TeamUrl extends React.PureComponent<Props, State> {
                                 defaultMessage="Must start with a letter and can't end in a dash"
                             />
                         </li>
-                    </ul>
+                    </ul> */}
                     <div className='mt-8'>
                         <Button
                             id='teamURLFinishButton'
@@ -301,4 +333,3 @@ export default class TeamUrl extends React.PureComponent<Props, State> {
         );
     }
 }
-/* eslint-enable react/no-string-refs */

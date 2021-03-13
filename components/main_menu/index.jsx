@@ -73,8 +73,9 @@ function mapStateToProps(state) {
     const joinableTeams = getJoinableTeamIds(state);
     const moreTeamsToJoin = joinableTeams && joinableTeams.length > 0;
     const rhsState = getRhsState(state);
-
+    const isAdminTeam = currentTeam.name.split('-')[0] === 'o';
     return {
+        isAdminTeam,
         appDownloadLink,
         enableCommands,
         enableCustomEmoji,

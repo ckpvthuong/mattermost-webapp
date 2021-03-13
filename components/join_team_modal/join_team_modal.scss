@@ -1,0 +1,28 @@
+.join-team {
+    min-height: 400px;
+
+    &__team {
+        cursor: pointer;
+
+        &__logo {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgb(17, 83, 171);
+            border-radius: 4px;
+            color: rgb(17, 83, 171);
+            line-height: 40px;
+        }
+
+        &__name {
+            flex: 1;
+            height: 40px;
+            line-height: 40px;
+        }
+
+        &__private-icon {
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+        }
+    }
+}
