@@ -237,6 +237,7 @@ export const WarnMetricTypes = {
 };
 
 export const ModalIdentifiers = {
+    JOIN_ANOTHER_TEAM: 'join_another_team',
     ABOUT: 'about',
     TEAM_SETTINGS: 'team_settings',
     CHANNEL_INFO: 'channel_info',
@@ -281,7 +282,7 @@ export const ModalIdentifiers = {
     CLOUD_PURCHASE: 'cloud_purchase',
     COMMERCIAL_SUPPORT: 'commercial_support',
     NO_INTERNET_CONNECTION: 'no_internet_connection',
-    USER_PROFILE: 'user_profile'
+    USER_PROFILE: 'user_profile',
 };
 
 export const UserStatuses = {

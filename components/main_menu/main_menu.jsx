@@ -6,6 +6,8 @@ import React from 'react';
 import {injectIntl} from 'react-intl';
 import {Permissions} from 'mattermost-redux/constants';
 
+import {isEmpty} from 'lodash';
+
 import * as GlobalActions from 'actions/global_actions';
 import {Constants, ModalIdentifiers} from 'utils/constants';
 import {intlShape} from 'utils/react_intl';
@@ -31,11 +33,10 @@ import MarketplaceModal from 'components/plugin_marketplace';
 import Menu from 'components/widgets/menu/menu';
 import TeamGroupsManageModal from 'components/team_groups_manage_modal';
 
-import withGetCloudSubscription from '../common/hocs/cloud/with_get_cloud_subcription';
+import JoinTeamModal from 'components/join_team_modal';
 
 class MainMenu extends React.PureComponent {
     static propTypes = {
-        isAdminTeam: PropTypes.string.isRequired,
         mobile: PropTypes.bool.isRequired,
         id: PropTypes.string,
         teamId: PropTypes.string,
@@ -56,6 +57,7 @@ class MainMenu extends React.PureComponent {
         enableEmailInvitations: PropTypes.bool.isRequired,
         enablePluginMarketplace: PropTypes.bool.isRequired,
         experimentalPrimaryTeam: PropTypes.string,
+        isAdminTeam: PropTypes.string.isRequired,
         helpLink: PropTypes.string,
         reportAProblemLink: PropTypes.string,
         moreTeamsToJoin: PropTypes.bool.isRequired,
@@ -95,6 +97,9 @@ class MainMenu extends React.PureComponent {
 
     async componentDidMount() {
         document.addEventListener('keydown', this.handleKeyDown);
+        if (isEmpty(this.props.subscription)) {
+            await this.props.actions.getCloudSubscription();
+        }
     }
 
     componentWillUnmount() {
@@ -314,10 +319,18 @@ class MainMenu extends React.PureComponent {
                             icon={this.props.mobile && <i className='fa fa-plus-square'/>}
                         />
                     </SystemPermissionGate>
-                    <Menu.ItemLink
+                    {/* <Menu.ItemLink
                         id='joinTeam'
                         show={!this.props.experimentalPrimaryTeam && this.props.moreTeamsToJoin && this.props.isAdminTeam}
                         to='/select_team'
+                        text={formatMessage({id: 'navbar_dropdown.join', defaultMessage: 'Join Another Team'})}
+                        icon={this.props.mobile && <i className='fa fa-plus-square'/>}
+                    /> */}
+                    <Menu.ItemToggleModalRedux
+                        id='joinTeam'
+                        modalId={ModalIdentifiers.JOIN_ANOTHER_TEAM}
+                        dialogType={JoinTeamModal}
+                        show={!this.props.experimentalPrimaryTeam && this.props.moreTeamsToJoin && this.props.isAdminTeam}
                         text={formatMessage({id: 'navbar_dropdown.join', defaultMessage: 'Join Another Team'})}
                         icon={this.props.mobile && <i className='fa fa-plus-square'/>}
                     />
@@ -425,4 +438,4 @@ class MainMenu extends React.PureComponent {
     }
 }
 
-export default injectIntl(withGetCloudSubscription((MainMenu)));
+export default injectIntl(MainMenu);
