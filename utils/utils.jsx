@@ -1403,11 +1403,11 @@ export function createUserName(firstName, lastName, email) {
     } else if (!isValidUsername(emailName)) {
         username = emailName
     } else {
-        let randomUserName = "" 
-        while(isValidUsername(randomUserName)){
-            randomUserName = randomUserName(Constants.MIN_USERNAME_LENGTH).toLowerCase()
+        let rname = "" 
+        while(isValidUsername(rname)){
+            rname = randomUserName(Constants.MIN_USERNAME_LENGTH).toLowerCase()
         }
-        username = randomUserName
+        username = rname
     }
    
     return username
