@@ -33,7 +33,7 @@ import MarketplaceModal from 'components/plugin_marketplace';
 import Menu from 'components/widgets/menu/menu';
 import TeamGroupsManageModal from 'components/team_groups_manage_modal';
 
-import JoinTeamModal from 'components/join_team_modal';
+// import JoinTeamModal from 'components/join_team_modal';
 
 class MainMenu extends React.PureComponent {
     static propTypes = {
@@ -319,21 +319,28 @@ class MainMenu extends React.PureComponent {
                             icon={this.props.mobile && <i className='fa fa-plus-square'/>}
                         />
                     </SystemPermissionGate>
-                    {/* <Menu.ItemLink
+                    <Menu.ItemLink
                         id='joinTeam'
                         show={!this.props.experimentalPrimaryTeam && this.props.moreTeamsToJoin && this.props.isAdminTeam}
                         to='/select_team'
                         text={formatMessage({id: 'navbar_dropdown.join', defaultMessage: 'Join Another Team'})}
                         icon={this.props.mobile && <i className='fa fa-plus-square'/>}
-                    /> */}
-                    <Menu.ItemToggleModalRedux
+                    />
+                    <Menu.ItemLink
+                        id='myTeam'
+                        show={true}
+                        to='/my_team'
+                        text={'My Teams'}
+                        icon={this.props.mobile && <i className='fa fa-plus-square'/>}
+                    />
+                    {/* <Menu.ItemToggleModalRedux
                         id='joinTeam'
                         modalId={ModalIdentifiers.JOIN_ANOTHER_TEAM}
                         dialogType={JoinTeamModal}
                         show={!this.props.experimentalPrimaryTeam && this.props.moreTeamsToJoin && this.props.isAdminTeam}
                         text={formatMessage({id: 'navbar_dropdown.join', defaultMessage: 'Join Another Team'})}
                         icon={this.props.mobile && <i className='fa fa-plus-square'/>}
-                    />
+                    /> */}
                     <Menu.ItemToggleModalRedux
                         id='leaveTeam'
                         show={!teamIsGroupConstrained && this.props.experimentalPrimaryTeam !== this.props.teamName}

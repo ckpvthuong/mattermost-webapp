@@ -4454,5 +4454,6 @@
   "widgets.users_emails_input.loading": "Loading",
   "widgets.users_emails_input.no_user_found_matching": "No one found matching **{text}**, type email address",
   "widgets.users_emails_input.valid_email": "Add **{email}**",
-  "yourcomputer": "Your computer"
+  "yourcomputer": "Your computer",
+  "join_team.invite_code": "Join team with invite code"
 }

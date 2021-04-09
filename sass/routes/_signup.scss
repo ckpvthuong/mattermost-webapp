@@ -26,7 +26,7 @@ body {
 .signup-team__container {
     margin: 0 auto;
     max-width: 400px;
-    padding: 100px 0 50px;
+    padding: 50px 0 50px;
     position: relative;
 
     .medium-center {
@@ -501,7 +501,9 @@ body {
 }
 
 .select-team__container {
-    max-width: 800px;
+    max-width: 100%;
+    padding-left: 60px;
+    padding-right: 60px;
 }
 
 .signup-team-all {
@@ -633,4 +635,65 @@ body {
 .verify_panel {
     margin: 60px auto auto;
     max-width: 380px;
+}
+
+.select_team_item {
+    @include legacy-pie-clearfix;
+    display: flex;
+    align-items: center;
+    background: #FFF;
+    position: relative;
+    padding-top: 3px;
+    height: 200px;
+    width: 200px;
+    border-radius: 5px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    padding-top: 40px;
+
+    border: 1px solid #BFBFBF;
+    box-shadow: 1px 1px rgba($color: #BFBFBF, $alpha: 0.4);
+    &:hover {
+        @include single-transition(background-color, .15s, ease);
+        background: #EDEBE9;
+    }
+
+    .tooltip {
+        margin: 10px 0 0 14px;
+    }
+
+    .icon {
+        cursor: pointer;
+        float: left;
+        margin: 0 -8px 0 15px;
+        opacity: .45;
+        height: 20px;
+
+        svg {
+            height: 20px;
+            width: 20px;
+        }
+    }
+
+    .fa-lock {
+        top: 1px;
+        position: relative;
+        font-size: 18px;
+    }
+
+    a {
+        color: inherit;
+        display: flex;
+        font-size: 1.1em;
+        line-height: 3.6em;
+        text-decoration: none;
+        align-items: center;
+        flex: 1 1 auto;
+        justify-content: space-between;
+
+        &.disabled {
+            cursor: default;
+            color: $dark-gray;
+        }
+    }
 }

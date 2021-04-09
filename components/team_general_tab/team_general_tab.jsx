@@ -508,7 +508,7 @@ export default class GeneralTab extends React.PureComponent {
             inviteSection = (
                 <SettingItemMin
                     title={Utils.localizeMessage('general_tab.codeTitle', 'Invite Code')}
-                    describe={Utils.localizeMessage('general_tab.codeDesc', "Click 'Edit' to regenerate Invite Code.")}
+                    describe={team.invite_id}
                     updateSection={this.handleUpdateSection}
                     section={'invite_id'}
                 />
