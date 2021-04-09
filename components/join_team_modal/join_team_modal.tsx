@@ -36,15 +36,7 @@ type Props = {
     };
     currentUserId: string;
     currentUserRoles: string;
-    currentUserIsGuest?: boolean;
-    customDescriptionText?: string;
-    isMemberOfTeam: boolean;
     listableTeams: Team[];
-    canCreateTeams: boolean;
-    canManageSystem: boolean;
-    canJoinPublicTeams: boolean;
-    canJoinPrivateTeams: boolean;
-    totalTeamsCount: number;
 };
 
 export const JoinTeamModal = (props: Props) => {

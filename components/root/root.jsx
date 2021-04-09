@@ -42,6 +42,7 @@ const LazyClaimController = React.lazy(() => import('components/claim'));
 const LazyHelpController = React.lazy(() => import('components/help/help_controller'));
 const LazyLinkingLandingPage = React.lazy(() => import('components/linking_landing_page'));
 const LazySelectTeam = React.lazy(() => import('components/select_team'));
+const LazyMyTeam = React.lazy(() => import('components/my_team'));
 const LazyAuthorize = React.lazy(() => import('components/authorize'));
 const LazyCreateTeam = React.lazy(() => import('components/create_team'));
 const LazyMfa = React.lazy(() => import('components/mfa/mfa_controller'));
@@ -68,6 +69,7 @@ const ClaimController = makeAsyncComponent(LazyClaimController);
 const HelpController = makeAsyncComponent(LazyHelpController);
 const LinkingLandingPage = makeAsyncComponent(LazyLinkingLandingPage);
 const SelectTeam = makeAsyncComponent(LazySelectTeam);
+const MyTeam = makeAsyncComponent(LazyMyTeam);
 const Authorize = makeAsyncComponent(LazyAuthorize);
 const Mfa = makeAsyncComponent(LazyMfa);
 
@@ -329,6 +331,10 @@ export default class Root extends React.PureComponent {
                     <LoggedInHFTRoute
                         path={'/select_team'}
                         component={SelectTeam}
+                    />
+                    <LoggedInHFTRoute
+                        path={'/my_team'}
+                        component={MyTeam}
                     />
                     <LoggedInHFTRoute
                         path={'/oauth/authorize'}

@@ -8,12 +8,11 @@ import {Link} from 'react-router-dom';
 import {Permissions} from 'mattermost-redux/constants';
 
 import {Team} from 'mattermost-redux/types/teams';
+import {Dispatch} from 'redux';
+import {GenericAction, GetStateFunc} from 'mattermost-redux/types/actions';
 
 import {emitUserLoggedOutEvent} from 'actions/global_actions';
 import {trackEvent} from 'actions/telemetry_actions.jsx';
-
-import * as UserAgent from 'utils/user_agent';
-import Constants from 'utils/constants';
 
 import logoImage from 'images/logo.png';
 
@@ -26,21 +25,15 @@ import SystemPermissionGate from 'components/permissions_gates/system_permission
 import SiteNameAndDescription from 'components/common/site_name_and_description';
 import LogoutIcon from 'components/widgets/icons/fa_logout_icon';
 
-import FormattedMarkdownMessage from 'components/formatted_markdown_message';
-
-// import InfiniteScroll from '../common/infinite_scroll.jsx';
-
-import {getSiteURL} from 'utils/url';
-
-import SelectTeamItem from './components/select_team_item';
+import MyTeamItem from './components/my_team_item';
 
 export const TEAMS_PER_PAGE = 30;
-const TEAM_MEMBERSHIP_DENIAL_ERROR_ID = 'api.team.add_members.user_denied';
 
 type Actions = {
     getTeams: (page?: number, perPage?: number, includeTotalCount?: boolean) => any;
     loadRolesIfNeeded: (roles: Iterable<string>) => any;
     addUserToTeam: (teamId: string, userId?: string) => any;
+    switchTeam: (url: string) => (dispatch: Dispatch<GenericAction>, getState: GetStateFunc) => void;
 }
 
 type Props = {
@@ -59,6 +52,7 @@ type Props = {
     siteURL?: string;
     actions: Actions;
     totalTeamsCount: number;
+    myTeams: Team[];
 };
 
 type State = {
@@ -67,10 +61,9 @@ type State = {
     endofTeamsData: boolean;
     currentPage: number;
     currentListableTeams: Team[];
-    inviteID: string;
 }
 
-export default class SelectTeam extends React.PureComponent<Props, State> {
+export default class MyTeam extends React.PureComponent<Props, State> {
     constructor(props: Props) {
         super(props);
 
@@ -80,7 +73,6 @@ export default class SelectTeam extends React.PureComponent<Props, State> {
             endofTeamsData: false,
             currentPage: 0,
             currentListableTeams: [],
-            inviteID: '',
         };
     }
 
@@ -118,42 +110,6 @@ export default class SelectTeam extends React.PureComponent<Props, State> {
         }
     }
 
-    handleTeamClick = async (team: Team) => {
-        const {siteURL, currentUserRoles} = this.props;
-        this.setState({loadingTeamId: team.id});
-
-        const {data, error} = await this.props.actions.addUserToTeam(team.id, this.props.currentUserId);
-        if (data && this.props.history !== undefined) {
-            this.props.history.push(`/${team.name}/channels/${Constants.DEFAULT_CHANNEL}`);
-        } else if (error) {
-            let errorMsg = error.message;
-
-            if (error.server_error_id === TEAM_MEMBERSHIP_DENIAL_ERROR_ID) {
-                if (currentUserRoles !== undefined && currentUserRoles.includes(Constants.PERMISSIONS_SYSTEM_ADMIN)) {
-                    errorMsg = (
-                        <FormattedMarkdownMessage
-                            id='join_team_group_constrained_denied_admin'
-                            defaultMessage={`You need to be a member of a linked group to join this team. You can add a group to this team [here](${siteURL}/admin_console/user_management/groups).`}
-                            values={{siteURL}}
-                        />
-                    );
-                } else {
-                    errorMsg = (
-                        <FormattedMarkdownMessage
-                            id='join_team_group_constrained_denied'
-                            defaultMessage='You need to be a member of a linked group to join this team.'
-                        />
-                    );
-                }
-            }
-
-            this.setState({
-                error: errorMsg,
-                loadingTeamId: '',
-            });
-        }
-    };
-
     handleLogoutClick = (e: MouseEvent): void => {
         e.preventDefault();
         trackEvent('select_team', 'click_logout');
@@ -168,15 +124,7 @@ export default class SelectTeam extends React.PureComponent<Props, State> {
         });
     };
 
-    public handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-        e.preventDefault();
-        e.currentTarget.select();
-    }
-    public handleTeamURLInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({inviteID: e.target.value});
-    }
     render(): ReactNode {
-        const {currentListableTeams} = this.state;
         const {
             currentUserIsGuest,
             canManageSystem,
@@ -216,16 +164,13 @@ export default class SelectTeam extends React.PureComponent<Props, State> {
             );
         } else {
             let joinableTeamContents: any = [];
-            currentListableTeams.forEach((listableTeam) => {
+            this.props.myTeams.forEach((listableTeam) => {
                 if ((listableTeam.allow_open_invite && canJoinPublicTeams) || (!listableTeam.allow_open_invite && canJoinPrivateTeams)) {
                     joinableTeamContents.push(
-                        <SelectTeamItem
+                        <MyTeamItem
                             key={'team_' + listableTeam.name}
                             team={listableTeam}
-                            onTeamClick={this.handleTeamClick}
-                            loading={this.state.loadingTeamId === listableTeam.id}
-                            canJoinPublicTeams={canJoinPublicTeams}
-                            canJoinPrivateTeams={canJoinPrivateTeams}
+                            onTeamClick={this.props.actions.switchTeam}
                         />,
                     );
                 }
@@ -277,25 +222,9 @@ export default class SelectTeam extends React.PureComponent<Props, State> {
                             defaultMessage='Teams you can join: '
                         />
                     </h4>
-                    {/* <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gridAutoRows: 'minmax(100px, auto)', gap: '10px'}}>
-                        {joinableTeamContents}
-                    </div> */}
-
                     <div className='row'>
                         {joinableTeamContents}
                     </div>
-
-                    {/* <InfiniteScroll
-                        callBack={this.fetchMoreTeams}
-                        styleClass='signup-team-all'
-                        totalItems={totalTeamsCount}
-                        itemsPerPage={TEAMS_PER_PAGE}
-                        bufferValue={280}
-                        pageNumber={currentPage}
-                        loaderStyle={{padding: '0px', height: '40px'}}
-                    >
-                        {joinableTeamContents}
-                    </InfiniteScroll> */}
                 </div>
             );
         }
@@ -320,27 +249,6 @@ export default class SelectTeam extends React.PureComponent<Props, State> {
                 </div>
             </SystemPermissionGate>
         );
-
-        let adminConsoleLink;
-        if (!UserAgent.isMobileApp()) {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            adminConsoleLink = (
-                <SystemPermissionGate permissions={[Permissions.MANAGE_SYSTEM]}>
-                    <div className='mt-8 hidden-xs'>
-                        <Link
-                            to='/admin_console'
-                            className='signup-team-login'
-                            onClick={() => trackEvent('select_team', 'click_system_console')}
-                        >
-                            <FormattedMessage
-                                id='signup_team_system_console'
-                                defaultMessage='Go to System Console'
-                            />
-                        </Link>
-                    </div>
-                </SystemPermissionGate>
-            );
-        }
 
         let headerButton;
         if (this.state.error) {
@@ -383,56 +291,6 @@ export default class SelectTeam extends React.PureComponent<Props, State> {
                         />
                         {teamSignUp}
                         {openContent}
-                        {/* {adminConsoleLink} */}
-                        {/* <input
-                            id='teamURLInput'
-                            type='text'
-                            className='share-link-input'
-                            placeholder=''
-                            maxLength={128}
-                            value={this.state.inviteID}
-                            autoFocus={true}
-                            onFocus={this.handleFocus}
-                            onChange={this.handleTeamURLInputChange}
-                            spellCheck='false'
-                        /> */}
-                        <h4>
-                            <FormattedMessage
-                                id='join_team.invite_code'
-                                defaultMessage='Join team with invite code'
-                            />
-                        </h4>
-                        <div className='InvitationModalMembersStep'>
-                            <div className='share-link'>
-                                <div className='share-link-input-block'>
-                                    <input
-                                        id='teamURLInput'
-                                        type='text'
-                                        className='share-link-input'
-                                        placeholder=''
-                                        maxLength={128}
-                                        value={this.state.inviteID}
-                                        autoFocus={true}
-                                        onFocus={this.handleFocus}
-                                        onChange={this.handleTeamURLInputChange}
-                                        spellCheck='false'
-                                    />
-                                    <button
-                                        className='share-link-input-button'
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            window.location.href = getSiteURL() + '/signup_user_complete/?id=' + this.state.inviteID;
-                                        }}
-                                        data-testid='shareLinkInputButton'
-                                    >
-                                        <FormattedMessage
-                                            id='multiselect.go'
-                                            defaultMessage='Go'
-                                        />
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
