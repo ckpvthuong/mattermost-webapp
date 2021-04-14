@@ -1381,13 +1381,19 @@ export function randomUserName(length){
    return result;
 }
 
+export function removeAccents(str) {
+    return str.normalize('NFD')
+              .replace(/[\u0300-\u036f]/g, '')
+              .replace(/đ/g, 'd').replace(/Đ/g, 'D');
+}
+
 export function createUserName(firstName, lastName, email) {
     firstName = firstName || ""
     lastName = lastName || ""
     email = email || ""
 
     const emailName = getNameFromEmail(email).replace(/\W/g,'').toLowerCase()
-    const userNameFromName = (firstName+lastName).replace(/\W/g, '').toLowerCase()
+    const userNameFromName = removeAccents(firstName+lastName).replace(/\W/g, '').toLowerCase()
 
     
 
@@ -1397,11 +1403,11 @@ export function createUserName(firstName, lastName, email) {
     } else if (!isValidUsername(emailName)) {
         username = emailName
     } else {
-        let randomUserName = "" 
-        while(isValidUsername(randomUserName)){
-            randomUserName = randomUserName(Constants.MIN_USERNAME_LENGTH).toLowerCase()
+        let rname = "" 
+        while(isValidUsername(rname)){
+            rname = randomUserName(Constants.MIN_USERNAME_LENGTH).toLowerCase()
         }
-        username = randomUserName
+        username = rname
     }
    
     return username
