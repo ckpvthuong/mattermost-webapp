@@ -291,6 +291,12 @@ var config = {
                 {from: 'images/logo-email.png', to: 'images'},
                 {from: 'images/browser-icons', to: 'images/browser-icons'},
                 {from: 'images/cloud', to: 'images'},
+                {from: 'zhomepage/images', to: 'images'},
+                {from: 'zhomepage/fonts', to: 'fonts'},
+                {from: 'zhomepage/css', to: 'css'},
+                {from: 'zhomepage/js', to: 'js'},
+                {from: 'zhomepage/homepage.html', to: 'homepage.html'},
+
             ],
         }),
 

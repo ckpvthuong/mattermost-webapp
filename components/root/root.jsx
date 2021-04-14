@@ -46,6 +46,7 @@ const LazyMyTeam = React.lazy(() => import('components/my_team'));
 const LazyAuthorize = React.lazy(() => import('components/authorize'));
 const LazyCreateTeam = React.lazy(() => import('components/create_team'));
 const LazyMfa = React.lazy(() => import('components/mfa/mfa_controller'));
+const LazyHome = React.lazy(() => import('components/home'));
 
 import store from 'stores/redux_store.jsx';
 import {getSiteURL} from 'utils/url';
@@ -72,6 +73,7 @@ const SelectTeam = makeAsyncComponent(LazySelectTeam);
 const MyTeam = makeAsyncComponent(LazyMyTeam);
 const Authorize = makeAsyncComponent(LazyAuthorize);
 const Mfa = makeAsyncComponent(LazyMfa);
+const Home = makeAsyncComponent(LazyHome);
 
 const LoggedInRoute = ({component: Component, ...rest}) => (
     <Route
@@ -276,6 +278,7 @@ export default class Root extends React.PureComponent {
         return (
             <IntlProvider>
                 <Switch>
+                <Route path="/home" component={Home}/>
                     <Route
                         path={'/error'}
                         component={ErrorPage}
@@ -372,10 +375,11 @@ export default class Root extends React.PureComponent {
                         path={'/:team'}
                         component={NeedsTeam}
                     />
+                   
                     <Redirect
                         to={{
                             ...this.props.location,
-                            pathname: '/login',
+                            pathname: '/home',
                         }}
                     />
                 </Switch>
