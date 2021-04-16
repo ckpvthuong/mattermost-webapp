@@ -81,6 +81,7 @@ class MainMenu extends React.PureComponent {
             closeRhsMenu: PropTypes.func.isRequired,
             unhideNextSteps: PropTypes.func.isRequired,
             getCloudSubscription: PropTypes.func,
+            setShowNextStepsView: PropTypes.func,
         }).isRequired,
     };
 
@@ -131,6 +132,10 @@ class MainMenu extends React.PureComponent {
             this.props.actions.closeRhsMenu();
             this.props.actions.showMentions();
         }
+    }
+
+    showMyTeams = () => {
+        this.props.actions.setShowNextStepsView(true);
     }
 
     shouldShowUpgradeModal = () => {
@@ -332,6 +337,12 @@ class MainMenu extends React.PureComponent {
                         to='/my_team'
                         text={'My Teams'}
                         icon={this.props.mobile && <i className='fa fa-plus-square'/>}
+                    />
+                    <Menu.ItemAction
+                        id='gettingStarted'
+                        show={true}
+                        onClick={() => this.showMyTeams()}
+                        text={'My Teams'}
                     />
                     {/* <Menu.ItemToggleModalRedux
                         id='joinTeam'

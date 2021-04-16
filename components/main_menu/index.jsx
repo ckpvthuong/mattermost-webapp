@@ -23,7 +23,7 @@ import {isAdmin} from 'utils/utils.jsx';
 
 import {RHSStates} from 'utils/constants';
 
-import {unhideNextSteps} from 'actions/views/next_steps';
+import {unhideNextSteps, setShowNextStepsView} from 'actions/views/next_steps';
 import {showMentions, showFlaggedPosts, closeRightHandSide, closeMenu as closeRhsMenu} from 'actions/views/rhs';
 import {openModal} from 'actions/views/modals';
 import {getRhsState} from 'selectors/rhs';
@@ -116,6 +116,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators({
+            setShowNextStepsView,
             openModal,
             showMentions,
             showFlaggedPosts,

@@ -127,15 +127,10 @@ export default class MyTeam extends React.PureComponent<Props, State> {
     render(): ReactNode {
         const {
             currentUserIsGuest,
-            canManageSystem,
             customDescriptionText,
             isMemberOfTeam,
             siteName,
             canCreateTeams,
-            canJoinPublicTeams,
-            canJoinPrivateTeams,
-
-            // totalTeamsCount,
         } = this.props;
 
         let openContent;
@@ -165,18 +160,16 @@ export default class MyTeam extends React.PureComponent<Props, State> {
         } else {
             let joinableTeamContents: any = [];
             this.props.myTeams.forEach((listableTeam) => {
-                if ((listableTeam.allow_open_invite && canJoinPublicTeams) || (!listableTeam.allow_open_invite && canJoinPrivateTeams)) {
-                    joinableTeamContents.push(
-                        <MyTeamItem
-                            key={'team_' + listableTeam.name}
-                            team={listableTeam}
-                            onTeamClick={this.props.actions.switchTeam}
-                        />,
-                    );
-                }
+                joinableTeamContents.push(
+                    <MyTeamItem
+                        key={'team_' + listableTeam.name}
+                        team={listableTeam}
+                        onTeamClick={this.props.actions.switchTeam}
+                    />,
+                );
             });
 
-            if (joinableTeamContents.length === 0 && (canCreateTeams || canManageSystem)) {
+            if (joinableTeamContents.length === 0 && (canCreateTeams)) {
                 joinableTeamContents = (
                     <div className='signup-team-dir-err'>
                         <div>
