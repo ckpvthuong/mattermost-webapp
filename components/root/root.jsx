@@ -375,7 +375,7 @@ export default class Root extends React.PureComponent {
                     <Redirect
                         to={{
                             ...this.props.location,
-                            pathname: '/login',
+                            pathname: '/static/homepage.html',
                         }}
                     />
                 </Switch>
