@@ -331,13 +331,13 @@ class MainMenu extends React.PureComponent {
                         text={formatMessage({id: 'navbar_dropdown.join', defaultMessage: 'Join Another Team'})}
                         icon={this.props.mobile && <i className='fa fa-plus-square'/>}
                     />
-                    <Menu.ItemLink
+                    {/* <Menu.ItemLink
                         id='myTeam'
                         show={true}
                         to='/my_team'
                         text={'My Teams'}
                         icon={this.props.mobile && <i className='fa fa-plus-square'/>}
-                    />
+                    /> */}
                     <Menu.ItemAction
                         id='gettingStarted'
                         show={true}
