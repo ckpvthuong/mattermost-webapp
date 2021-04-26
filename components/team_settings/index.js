@@ -3,13 +3,17 @@
 
 import {connect} from 'react-redux';
 
-import {getCurrentTeam} from 'mattermost-redux/selectors/entities/teams';
+import {getCurrentTeam, getTeam} from 'mattermost-redux/selectors/entities/teams';
 
 import TeamSettings from './team_settings.jsx';
 
+import {getCurrentTeamSetting} from 'selectors/views/settings';
+
 function mapStateToProps(state) {
+    const cts = getCurrentTeamSetting(state)
     return {
-        team: getCurrentTeam(state),
+        team:  getCurrentTeam(state),
+        currentTeamSetting:  cts ? getTeam(state, cts.id) : null
     };
 }
 

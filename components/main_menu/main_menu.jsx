@@ -342,7 +342,7 @@ class MainMenu extends React.PureComponent {
                         id='gettingStarted'
                         show={true}
                         onClick={() => this.showMyTeams()}
-                        text={'My Teams'}
+                        text={formatMessage({id: 'myteams.myteams', defaultMessage: 'My Teams'})}
                     />
                     {/* <Menu.ItemToggleModalRedux
                         id='joinTeam'

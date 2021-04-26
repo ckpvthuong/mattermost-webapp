@@ -11,10 +11,14 @@ import * as Utils from 'utils/utils.jsx';
 const SettingsSidebar = React.lazy(() => import('components/settings_sidebar'));
 
 import TeamSettings from 'components/team_settings';
+import TeamSettingRaw from 'components/team_settings/team_settings';
 
 type Props = {
     onHide: () => void;
     isCloud?: boolean;
+    team?: any
+    onClose?: () => void;
+    
 }
 
 export type State = {
@@ -60,11 +64,13 @@ export default class TeamSettingsModal extends React.PureComponent<Props, State>
     }
 
     handleHide = () => {
+        
         this.setState({show: false});
     }
 
     // called after the dialog is fully hidden and faded out
     handleHidden = () => {
+        this.props.onClose && this.props.onClose()
         this.setState({
             activeTab: 'general',
             activeSection: '',
@@ -112,13 +118,17 @@ export default class TeamSettingsModal extends React.PureComponent<Props, State>
                             </React.Suspense>
                         </div>
                         <div className='settings-content minimize-settings'>
-                            <TeamSettings
-                                activeTab={this.state.activeTab}
-                                activeSection={this.state.activeSection}
-                                updateSection={this.updateSection}
-                                closeModal={this.handleHide}
-                                collapseModal={this.collapseModal}
-                            />
+                            
+                               
+                                <TeamSettings
+                                    activeTab={this.state.activeTab}
+                                    activeSection={this.state.activeSection}
+                                    updateSection={this.updateSection}
+                                    closeModal={this.handleHide}
+                                    collapseModal={this.collapseModal}
+                                />
+                            
+                            
                         </div>
                     </div>
                 </Modal.Body>

@@ -25,7 +25,7 @@ import SystemPermissionGate from 'components/permissions_gates/system_permission
 import SiteNameAndDescription from 'components/common/site_name_and_description';
 import LogoutIcon from 'components/widgets/icons/fa_logout_icon';
 
-import MyTeamItem from './components/my_team_item';
+import MyTeamItem from './my_team_item';
 
 export const TEAMS_PER_PAGE = 30;
 

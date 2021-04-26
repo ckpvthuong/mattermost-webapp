@@ -4132,5 +4132,9 @@
   "user.settings.general.statusStringInfo": "Hãy cho người biết bạn đang nghĩ gì !",
   "signup_user_completed.enterFirstName": "Nhập họ và tên đệm của bạn",
   "signup_user_completed.enterLastName": "Nhập tên của bạn",
-  "join_team.invite_code": "Tham gia nhóm với bằng mã"
+  "join_team.invite_code": "Tham gia nhóm với bằng mã",
+  "myteams.all": "Tất Cả",
+  "myteams.created": "Đội đã tạo",
+  "myteams.myteams": "Đội đã tham gia",
+  "myteams.settings": "Cài đặt"
 }

@@ -10,6 +10,10 @@ export default function settings(state = {}, action) {
             activeSection: action.data,
             previousActiveSection: state.activeSection,
         };
+    case ActionTypes.SET_CURRENT_TEAM_SETTING:
+        return {
+            current_team_setting: action.data,
+        };
     default:
         return state;
     }

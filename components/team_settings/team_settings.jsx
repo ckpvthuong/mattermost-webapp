@@ -7,7 +7,10 @@ import React from 'react';
 import GeneralTab from 'components/team_general_tab';
 import ImportTab from 'components/team_import_tab.jsx';
 
-const TeamSettings = ({activeTab, activeSection, updateSection, closeModal, collapseModal, team}) => {
+const TeamSettings = ({activeTab, activeSection, updateSection, closeModal, collapseModal, team, currentTeamSetting}) => {
+  
+    team = currentTeamSetting || team
+  
     if (!team) {
         return null;
     }

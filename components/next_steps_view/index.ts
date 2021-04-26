@@ -19,6 +19,7 @@ import {GlobalState} from 'types/store';
 import {Preferences} from 'utils/constants';
 import {isGuest} from 'utils/utils';
 import {switchTeam} from 'actions/team_actions.jsx';
+import {getTeamsForUserWithOptions} from 'actions/team_extra_actions';
 
 import {getSteps, isFirstAdmin} from './steps';
 
@@ -55,6 +56,7 @@ function mapDispatchToProps(dispatch: Dispatch) {
                 getProfiles,
                 closeRightHandSide,
                 switchTeam,
+                getTeamsForUserWithOptions
             },
             dispatch,
         ),

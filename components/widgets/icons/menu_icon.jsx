@@ -6,6 +6,7 @@ import {useIntl} from 'react-intl';
 
 export default function MenuIcon(props) {
     const {formatMessage} = useIntl();
+    const color = props.fillColor ? props.fillColor : 'inherit'
     return (
         <span {...props}>
             <svg
@@ -19,13 +20,13 @@ export default function MenuIcon(props) {
                 <g
                     stroke='none'
                     strokeWidth='1'
-                    fill='inherit'
+                    fill= {color}
                     fillRule='evenodd'
                 >
                     <g
                         transform='translate(-188.000000, -38.000000)'
                         fillRule='nonzero'
-                        fill='inherit'
+                        fill= {color}
                     >
                         <g>
                             <g>

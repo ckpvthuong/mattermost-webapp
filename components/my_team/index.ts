@@ -18,6 +18,7 @@ import {GlobalState} from 'types/store';
 import {addUserToTeam} from 'actions/team_actions';
 import {isGuest} from 'utils/utils';
 import {switchTeam} from 'actions/team_actions.jsx';
+import {setCurrentTeamSetting} from 'actions/views/settings'
 
 import MyTeam from './my_team';
 
@@ -51,6 +52,7 @@ function mapDispatchToProps(dispatch: Dispatch) {
             loadRolesIfNeeded,
             addUserToTeam,
             switchTeam,
+            setCurrentTeamSetting
         }, dispatch),
     };
 }

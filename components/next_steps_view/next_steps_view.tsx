@@ -2,32 +2,34 @@
 // See LICENSE.txt for license information.
 
 import React from 'react';
-import {FormattedMessage} from 'react-intl';
-import {Link} from 'react-router-dom';
-import {Dispatch} from 'redux';
-import {GenericAction, GetStateFunc} from 'mattermost-redux/types/actions';
+import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router-dom';
+import { Dispatch } from 'redux';
+import { GenericAction, GetStateFunc } from 'mattermost-redux/types/actions';
 
-import {PreferenceType} from 'mattermost-redux/types/preferences';
-import {UserProfile} from 'mattermost-redux/types/users';
-import {Permissions} from 'mattermost-redux/constants';
-import {Team} from 'mattermost-redux/types/teams';
+import { PreferenceType } from 'mattermost-redux/types/preferences';
+import { UserProfile } from 'mattermost-redux/types/users';
+import { Permissions } from 'mattermost-redux/constants';
+import { Team } from 'mattermost-redux/types/teams';
+import * as Utils from 'utils/utils';
 
-import {pageVisited, trackEvent} from 'actions/telemetry_actions';
-import {getAnalyticsCategory} from 'components/next_steps_view/step_helpers';
+import { pageVisited, trackEvent } from 'actions/telemetry_actions';
+import { getAnalyticsCategory } from 'components/next_steps_view/step_helpers';
 
 import logoImage from 'images/logo.png';
 import AnnouncementBar from 'components/announcement_bar';
 import SiteNameAndDescription from 'components/common/site_name_and_description';
 import SystemPermissionGate from 'components/permissions_gates/system_permission_gate';
 import LoadingScreen from 'components/loading_screen';
-import MyTeamItem from 'components/my_team/components/my_team_item';
+import MyTeamItem from 'components/my_team/my_team_item';
 import CloseIcon from 'components/widgets/icons/close_icon';
 
-import {StepType} from './steps';
+import { StepType } from './steps';
 import './next_steps_view.scss';
 
 // import NextStepsTips from './next_steps_tips';
 import OnboardingBgSvg from './images/onboarding-bg-svg';
+
 
 // import OnboardingSuccessSvg from './images/onboarding-success-svg';
 
@@ -47,6 +49,7 @@ type Props = {
         closeRightHandSide: () => void;
         getProfiles: () => void;
         switchTeam: (url: string) => (dispatch: Dispatch<GenericAction>, getState: GetStateFunc) => void;
+        getTeamsForUserWithOptions: (userId: any, options: any) => any;
     };
 };
 
@@ -57,6 +60,8 @@ type State = {
     show: boolean;
     loadingTeamId?: string;
     error: any;
+    currentListTeams: Team[];
+    filterValue: string
 }
 
 export default class NextStepsView extends React.PureComponent<Props, State> {
@@ -69,23 +74,49 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
             animating: false,
             show: false,
             error: null,
+            currentListTeams: [],
+            filterValue: 'all'
         };
     }
+
 
     async componentDidMount() {
         await this.props.actions.getProfiles();
 
         // eslint-disable-next-line react/no-did-mount-set-state
-        this.setState({show: true});
+        this.setState({ show: true });
         pageVisited(getAnalyticsCategory(this.props.isFirstAdmin), 'pageview_welcome');
         this.props.actions.closeRightHandSide();
+        var teams = await this.props.actions.getTeamsForUserWithOptions(this.props.currentUser.id, {});
+        this.setState({ currentListTeams: teams })
     }
 
+
+
     stopAnimating = () => {
-        this.setState({animating: false});
+        this.setState({ animating: false });
+    }
+
+    handleFilterChange = async (e: any) => {
+        const fvalue= e.target.value
+        this.setState({ filterValue: fvalue})
+    }
+
+    filterTeam = () => {
+        switch(this.state.filterValue){
+            case 'all':
+                return this.state.currentListTeams
+            case 'created':
+                return this.state.currentListTeams.filter(team => team.email==this.props.currentUser.email)
+            default:
+                return this.state.currentListTeams
+        }
     }
 
     render() {
+
+        const listTeamRender = []
+
         const {
             currentUserIsGuest,
             customDescriptionText,
@@ -95,7 +126,7 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
 
         let openContent;
         if (this.state.loadingTeamId) {
-            openContent = <LoadingScreen/>;
+            openContent = <LoadingScreen />;
         } else if (this.state.error) {
             openContent = (
                 <div className='signup__content'>
@@ -119,11 +150,11 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
             );
         } else {
             let joinableTeamContents: any = [];
-            this.props.myTeams.forEach((listableTeam) => {
+            this.filterTeam().forEach((listableTeam) => {
                 joinableTeamContents.push(
                     <MyTeamItem
                         key={'team_' + listableTeam.name}
-                        team={listableTeam}
+                        team_id={listableTeam.id}
                         onTeamClick={this.props.actions.switchTeam}
                     />,
                 );
@@ -168,13 +199,25 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
                 <div
                     id='teamsYouCanJoinContent'
                     className='signup__content'
-                >
+                >   
+               
                     <h4>
                         <FormattedMessage
-                            id='signup_team.join_open'
-                            defaultMessage='Teams you can join: '
+                            id='myteams.myteams'
+                            defaultMessage='My Teams'
                         />
+                        <select
+                        id='myteamsfilter'
+                        className='form-control'
+                        value={this.state.filterValue}
+                        onChange={this.handleFilterChange}
+                    >
+
+                        <option value={'all'}>{Utils.localizeMessage('myteams.all', 'All')}</option>
+                        <option value={'created'}>{Utils.localizeMessage('myteams.created', 'Created')}</option>
+                    </select>
                     </h4>
+                    
                     <div className='row'>
                         {joinableTeamContents}
                     </div>
@@ -186,7 +229,7 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
             <SystemPermissionGate permissions={[Permissions.CREATE_TEAM]}>
                 <div
                     className='margin--extra'
-                    style={{marginTop: '0.5em'}}
+                    style={{ marginTop: '0.5em', fontSize: 20 }}
                 >
                     <Link
                         id='createNewTeamLink'
@@ -209,38 +252,21 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
                 className='app__content NextStepsView'
             >
                 {this.state.show &&
-                <>
-                    <OnboardingBgSvg/>
-                    <div>
-                        <header className='NextStepsView__header'>
-                            <div className='NextStepsView__header-headerText'>
-                                <AnnouncementBar/>
-                            </div>
-                            <CloseIcon
-                                id='closeIcon'
-                                className='close-icon'
-                                onClick={() => {}}
-                            />
-                        </header>
-                        <div className='col-sm-12'>
-                            <div
-                                className={'select-team__container signup-team__container'}
-                            >
-                                <img
-                                    alt={'signup team logo'}
-                                    className='signup-team-logo'
-                                    src={logoImage}
-                                />
-                                <SiteNameAndDescription
-                                    customDescriptionText={customDescriptionText}
-                                    siteName={siteName}
-                                />
-                                {teamSignUp}
-                                {openContent}
+                    <>
+                        <OnboardingBgSvg />
+                        <div>
+                           
+                            <div className='col-sm-12'>
+                                <div
+                                    className={'select-team__container signup-team__container'}
+                                >
+                                    
+                                    {teamSignUp}
+                                    {openContent}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </>}
+                    </>}
             </section>
         );
     }

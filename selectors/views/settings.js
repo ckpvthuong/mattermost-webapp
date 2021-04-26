@@ -4,3 +4,8 @@
 export function getPreviousActiveSection(state) {
     return state.views.settings.previousActiveSection;
 }
+
+export function getCurrentTeamSetting(state) {
+    return state.views.settings.current_team_setting;
+}
+

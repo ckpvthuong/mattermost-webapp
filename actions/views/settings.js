@@ -9,3 +9,10 @@ export function updateActiveSection(newActiveSection) {
         data: newActiveSection,
     };
 }
+
+export function setCurrentTeamSetting(team) {
+    return {
+        type: ActionTypes.SET_CURRENT_TEAM_SETTING,
+        data: team,
+    };
+}
