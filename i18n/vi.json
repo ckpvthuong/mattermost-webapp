@@ -4132,12 +4132,14 @@
   "user.settings.general.statusStringInfo": "Hãy cho người biết bạn đang nghĩ gì !",
   "signup_user_completed.enterFirstName": "Nhập họ và tên đệm của bạn",
   "signup_user_completed.enterLastName": "Nhập tên của bạn",
-  "join_team.invite_code": "Tham gia đội với bằng mã",
-  "myteams.my_all": "Đội đã tham gia",
-  "myteams.my_created": "Đội đã tạo",
+  "join_team.invite_code": "Tham gia đội bằng mã",
+  "myteams.my_all": "Các đội bạn đã tham gia",
+  "myteams.my_created": "Các đội bạn đã tạo",
   "myteams.myteams": "Quản lý các đội",
   "myteams.settings": "Cài đặt",
-  "myteams.org_all": "Các đội thuộc tổ chức",
-  "myteams.org_pub_can_join": "Đội công khai có thể tham gia",
-  "myteams.org_pri_cant_join": "Đội riêng tư "
+  "myteams.org_all": "Các đội tạo bởi chủ đội hiện tại",
+  "myteams.org_pub_can_join": "Các đội công khai bạn có thể tham gia (tạo đội bởi chủ đội hiện tại)",
+  "myteams.org_pri_cant_join": "Các đội riêng tư (tạo bởi chủ đội hiện tại)",
+  "myteams.or": "hoặc",
+  "myteams.join_by_code": "Tham gia bằng mã"
 }
