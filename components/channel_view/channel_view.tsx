@@ -115,9 +115,9 @@ export default class ChannelView extends React.PureComponent<Props, State> {
 
     async componentDidMount() {
         await this.props.actions.getProfiles();
-        if ((this.props.showNextSteps || this.props.showNextStepsTips) && !this.props.isOnboardingHidden) {
+        //if ((this.props.showNextSteps || this.props.showNextStepsTips) && !this.props.isOnboardingHidden) {
             this.props.actions.setShowNextStepsView(true);
-        }
+        //}
     }
 
     componentDidUpdate(prevProps: Props) {
