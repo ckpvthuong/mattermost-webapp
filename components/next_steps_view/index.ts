@@ -8,7 +8,7 @@ import {savePreferences} from 'mattermost-redux/actions/preferences';
 import {getProfiles} from 'mattermost-redux/actions/users';
 import {makeGetCategory} from 'mattermost-redux/selectors/entities/preferences';
 import {getCurrentUser, isCurrentUserSystemAdmin} from 'mattermost-redux/selectors/entities/users';
-import {getMyTeams} from 'mattermost-redux/selectors/entities/teams';
+import {getMyTeams, getCurrentTeam} from 'mattermost-redux/selectors/entities/teams';
 import {haveISystemPermission} from 'mattermost-redux/selectors/entities/roles';
 import {Permissions} from 'mattermost-redux/constants';
 import {getConfig} from 'mattermost-redux/selectors/entities/general';
@@ -20,10 +20,10 @@ import {Preferences} from 'utils/constants';
 import {isGuest} from 'utils/utils';
 import {switchTeam} from 'actions/team_actions.jsx';
 import {getTeamsForUserWithOptions} from 'actions/team_extra_actions';
-
 import {getSteps, isFirstAdmin} from './steps';
-
 import NextStepsView from './next_steps_view';
+import {getUserByEmail} from 'mattermost-redux/actions/users';
+
 
 function makeMapStateToProps() {
     const getCategory = makeGetCategory();
@@ -43,6 +43,7 @@ function makeMapStateToProps() {
             preferences: getCategory(state, Preferences.RECOMMENDED_NEXT_STEPS),
             steps: getSteps(state),
             isFirstAdmin: isFirstAdmin(state),
+            currentTeam: getCurrentTeam(state)
         };
     };
 }
@@ -57,6 +58,7 @@ function mapDispatchToProps(dispatch: Dispatch) {
                 closeRightHandSide,
                 switchTeam,
                 getTeamsForUserWithOptions,
+                getUserByEmail,
             },
             dispatch,
         ),

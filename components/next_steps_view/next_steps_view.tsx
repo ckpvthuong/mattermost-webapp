@@ -34,7 +34,8 @@ import OnboardingBgSvg from './images/onboarding-bg-svg';
 // import OnboardingSuccessSvg from './images/onboarding-success-svg';
 
 type Props = {
-    myTeams: Team[];
+    currentTeam: Team;
+    //myTeams: Team[];
     currentUser: UserProfile;
     canCreateTeams: boolean;
     currentUserIsGuest?: boolean;
@@ -50,6 +51,7 @@ type Props = {
         getProfiles: () => void;
         switchTeam: (url: string) => (dispatch: Dispatch<GenericAction>, getState: GetStateFunc) => void;
         getTeamsForUserWithOptions: (userId: any, options: any) => any;
+        getUserByEmail: (email: string) => any;
     };
 };
 
@@ -60,8 +62,9 @@ type State = {
     show: boolean;
     loadingTeamId?: string;
     error: any;
-    currentListTeams: Team[];
-    filterValue: string
+    myTeams: Team[];
+    filterValue: string;
+    orgTeams: Team[]
 }
 
 export default class NextStepsView extends React.PureComponent<Props, State> {
@@ -74,8 +77,9 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
             animating: false,
             show: false,
             error: null,
-            currentListTeams: [],
-            filterValue: 'all'
+            myTeams: [],
+            filterValue: 'all',
+            orgTeams: []
         };
     }
 
@@ -84,11 +88,13 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
         await this.props.actions.getProfiles();
 
         // eslint-disable-next-line react/no-did-mount-set-state
-        this.setState({ show: true });
+        //this.setState({ show: true });
         //pageVisited(getAnalyticsCategory(this.props.isFirstAdmin), 'pageview_welcome');
         this.props.actions.closeRightHandSide();
-        var teams = await this.props.actions.getTeamsForUserWithOptions(this.props.currentUser.id, {});
-        this.setState({ currentListTeams: teams })
+        const myTeams = await this.props.actions.getTeamsForUserWithOptions(this.props.currentUser.id, {});
+        const {data}= await this.props.actions.getUserByEmail(this.props.currentTeam.email)
+        const orgTeams = await this.props.actions.getTeamsForUserWithOptions(data.id, {});
+        this.setState({ myTeams: myTeams, orgTeams: orgTeams , show: true})
     }
 
 
@@ -103,13 +109,22 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
     }
 
     filterTeam = () => {
+        const myTeams = this.state.myTeams
+        const myTeamsIds = myTeams.map((v,i,a) => v.id)
+        const orgTeams = this.state.orgTeams
         switch (this.state.filterValue) {
-            case 'all':
-                return this.state.currentListTeams
-            case 'created':
-                return this.state.currentListTeams.filter(team => team.email == this.props.currentUser.email)
+            case 'my_all':
+                return myTeams
+            case 'my_created':
+                return myTeams.filter(team => team.email == this.props.currentUser.email)
+            case 'org_pub_can_join':
+                return orgTeams.filter(team => team.type === 'O' && (!myTeamsIds.includes(team.id)))
+            case 'org_pri_cant_join':
+                return orgTeams.filter(team => team.type === 'I' && (!myTeamsIds.includes(team.id)))
+            case 'org_all':
+                return orgTeams
             default:
-                return this.state.currentListTeams
+                return myTeams
         }
     }
 
@@ -160,40 +175,40 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
                 );
             });
 
-            if (joinableTeamContents.length === 0 && (canCreateTeams)) {
-                joinableTeamContents = (
-                    <div className='signup-team-dir-err'>
-                        <div>
-                            <FormattedMessage
-                                id='signup_team.no_open_teams_canCreate'
-                                defaultMessage='No teams are available to join. Please create a new team or ask your administrator for an invite.'
-                            />
-                        </div>
-                    </div>
-                );
-            } else if (joinableTeamContents.length === 0) {
-                joinableTeamContents = (
-                    <div className='signup-team-dir-err'>
-                        <div>
-                            <SystemPermissionGate permissions={[Permissions.CREATE_TEAM]}>
-                                <FormattedMessage
-                                    id='signup_team.no_open_teams_canCreate'
-                                    defaultMessage='No teams are available to join. Please create a new team or ask your administrator for an invite.'
-                                />
-                            </SystemPermissionGate>
-                            <SystemPermissionGate
-                                permissions={[Permissions.CREATE_TEAM]}
-                                invert={true}
-                            >
-                                <FormattedMessage
-                                    id='signup_team.no_open_teams'
-                                    defaultMessage='No teams are available to join. Please ask your administrator for an invite.'
-                                />
-                            </SystemPermissionGate>
-                        </div>
-                    </div>
-                );
-            }
+            // if (joinableTeamContents.length === 0 && (canCreateTeams)) {
+            //     joinableTeamContents = (
+            //         <div className='signup-team-dir-err'>
+            //             <div>
+            //                 <FormattedMessage
+            //                     id='signup_team.no_open_teams_canCreate'
+            //                     defaultMessage='No teams are available to join. Please create a new team or ask your administrator for an invite.'
+            //                 />
+            //             </div>
+            //         </div>
+            //     );
+            // } else if (joinableTeamContents.length === 0) {
+            //     joinableTeamContents = (
+            //         <div className='signup-team-dir-err'>
+            //             <div>
+            //                 <SystemPermissionGate permissions={[Permissions.CREATE_TEAM]}>
+            //                     <FormattedMessage
+            //                         id='signup_team.no_open_teams_canCreate'
+            //                         defaultMessage='No teams are available to join. Please create a new team or ask your administrator for an invite.'
+            //                     />
+            //                 </SystemPermissionGate>
+            //                 <SystemPermissionGate
+            //                     permissions={[Permissions.CREATE_TEAM]}
+            //                     invert={true}
+            //                 >
+            //                     <FormattedMessage
+            //                         id='signup_team.no_open_teams'
+            //                         defaultMessage='No teams are available to join. Please ask your administrator for an invite.'
+            //                     />
+            //                 </SystemPermissionGate>
+            //             </div>
+            //         </div>
+            //     );
+            // }
 
             openContent = (
                 <div
@@ -213,8 +228,11 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
                             onChange={this.handleFilterChange}
                         >
 
-                            <option value={'all'}>{Utils.localizeMessage('myteams.all', 'All')}</option>
-                            <option value={'created'}>{Utils.localizeMessage('myteams.created', 'Created')}</option>
+                            <option value={'my_all'}>{Utils.localizeMessage('myteams.my_all', 'My All Teams')}</option>
+                            <option value={'my_created'}>{Utils.localizeMessage('myteams.my_created', 'My Created')}</option>
+                            <option value={'org_pub_can_join'}>{Utils.localizeMessage('myteams.org_pub_can_join', 'Organization Public Teams')}</option>
+                            <option value={'org_pri_cant_join'}>{Utils.localizeMessage('myteams.org_pri_cant_join', 'Organization Private Teams')}</option>
+                            <option value={'org_all'}>{Utils.localizeMessage('myteams.org_all', 'Organization All Teams')}</option>
                         </select>
                     </h4>
 

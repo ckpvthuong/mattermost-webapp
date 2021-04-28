@@ -339,7 +339,7 @@ class MainMenu extends React.PureComponent {
                         icon={this.props.mobile && <i className='fa fa-plus-square'/>}
                     /> */}
                     <Menu.ItemAction
-                        id='gettingStarted'
+                        id='myteams'
                         show={true}
                         onClick={() => this.showMyTeams()}
                         text={formatMessage({id: 'myteams.myteams', defaultMessage: 'My Teams'})}
