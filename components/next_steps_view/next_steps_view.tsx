@@ -85,7 +85,7 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
 
         // eslint-disable-next-line react/no-did-mount-set-state
         this.setState({ show: true });
-        pageVisited(getAnalyticsCategory(this.props.isFirstAdmin), 'pageview_welcome');
+        //pageVisited(getAnalyticsCategory(this.props.isFirstAdmin), 'pageview_welcome');
         this.props.actions.closeRightHandSide();
         var teams = await this.props.actions.getTeamsForUserWithOptions(this.props.currentUser.id, {});
         this.setState({ currentListTeams: teams })
@@ -98,16 +98,16 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
     }
 
     handleFilterChange = async (e: any) => {
-        const fvalue= e.target.value
-        this.setState({ filterValue: fvalue})
+        const fvalue = e.target.value
+        this.setState({ filterValue: fvalue })
     }
 
     filterTeam = () => {
-        switch(this.state.filterValue){
+        switch (this.state.filterValue) {
             case 'all':
                 return this.state.currentListTeams
             case 'created':
-                return this.state.currentListTeams.filter(team => team.email==this.props.currentUser.email)
+                return this.state.currentListTeams.filter(team => team.email == this.props.currentUser.email)
             default:
                 return this.state.currentListTeams
         }
@@ -199,25 +199,25 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
                 <div
                     id='teamsYouCanJoinContent'
                     className='signup__content'
-                >   
-               
+                >
+
                     <h4>
                         <FormattedMessage
                             id='myteams.myteams'
                             defaultMessage='My Teams'
                         />
                         <select
-                        id='myteamsfilter'
-                        className='form-control'
-                        value={this.state.filterValue}
-                        onChange={this.handleFilterChange}
-                    >
+                            id='myteamsfilter'
+                            className='form-control'
+                            value={this.state.filterValue}
+                            onChange={this.handleFilterChange}
+                        >
 
-                        <option value={'all'}>{Utils.localizeMessage('myteams.all', 'All')}</option>
-                        <option value={'created'}>{Utils.localizeMessage('myteams.created', 'Created')}</option>
-                    </select>
+                            <option value={'all'}>{Utils.localizeMessage('myteams.all', 'All')}</option>
+                            <option value={'created'}>{Utils.localizeMessage('myteams.created', 'Created')}</option>
+                        </select>
                     </h4>
-                    
+
                     <div className='row'>
                         {joinableTeamContents}
                     </div>
@@ -252,21 +252,29 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
                 className='app__content NextStepsView'
             >
                 {this.state.show &&
-                    <>
-                        <OnboardingBgSvg />
-                        <div>
-                           
-                            <div className='col-sm-12'>
-                                <div
-                                    className={'select-team__container signup-team__container'}
-                                >
-                                    
-                                    {teamSignUp}
-                                    {openContent}
-                                </div>
+
+
+                    <div className='NextStepsView__viewWrapper NextStepsView__completedView completed'>
+
+
+                        <div
+                            className={'select-team__container signup-team__container'}
+                        >
+                            <div className='NextStepsView__header' style={{ padding: 0 }}>
+                            {teamSignUp}
+                                <CloseIcon
+                                    id='closeIcon'
+                                    className='close-icon'
+                                    onClick={() => this.props.actions.setShowNextStepsView(false)}
+                                    style={{ marginLeft: 'auto' }}
+                                />
                             </div>
+                            
+                            {openContent}
                         </div>
-                    </>}
+                    </div>
+
+                }
             </section>
         );
     }

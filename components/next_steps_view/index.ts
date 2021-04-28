@@ -56,7 +56,7 @@ function mapDispatchToProps(dispatch: Dispatch) {
                 getProfiles,
                 closeRightHandSide,
                 switchTeam,
-                getTeamsForUserWithOptions
+                getTeamsForUserWithOptions,
             },
             dispatch,
         ),
