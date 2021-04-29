@@ -1,8 +1,12 @@
-name: mattermost-digital-ocean
+name: Run on specific commit
 
-on: workflow_dispatch
-
-
+on: 
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Ref to run workflow'
+        required: true
+        default: ''
 jobs:
   build:
 
@@ -12,6 +16,7 @@ jobs:
     - uses: actions/checkout@v2
       with:
           persist-credentials: false
+          ref: ${{ github.event.inputs.ref }}
     - name: Reconfigure git to use HTTP authentication
       run: >
         git config --global url."https://github.com/".insteadOf
