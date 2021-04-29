@@ -3098,7 +3098,7 @@
   "multiselect.addGroupsPlaceholder": "Tìm kiếm và thêm nhóm",
   "multiselect.addTeamsPlaceholder": "Tìm kiếm và thêm đội",
   "multiselect.adding": "Đang thêm ...",
-  "multiselect.go": "Bắt đầu",
+  "multiselect.go": "Tham gia",
   "multiselect.list.notFound": "Không tìm thấy kết quả nào phù hợp ** {searchQuery} **",
   "multiselect.loading": "Đang tải ...",
   "multiselect.numGroupsRemaining": "Sử dụng ↑ ↓ để duyệt, ↵ để chọn. Bạn có thể thêm {num, number} nữa {num, plurar, one {nhóm} other {nhóm}}. ",
@@ -4141,5 +4141,7 @@
   "myteams.org_pub_can_join": "Các đội công khai bạn có thể tham gia (tạo đội bởi chủ đội hiện tại)",
   "myteams.org_pri_cant_join": "Các đội riêng tư (tạo bởi chủ đội hiện tại)",
   "myteams.or": "hoặc",
-  "myteams.join_by_code": "Tham gia bằng mã"
+  "myteams.join_by_code": "Tham gia bằng mã",
+  "channel_header.unreadonly" : "Tắt tính năng chỉ đọc",
+  "channel_header.readonly": "Bật tính năng chỉ đọc"
 }

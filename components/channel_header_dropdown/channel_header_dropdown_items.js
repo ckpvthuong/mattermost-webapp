@@ -32,6 +32,7 @@ import MenuItemLeaveChannel from './menu_items/leave_channel';
 import MenuItemCloseChannel from './menu_items/close_channel';
 import MenuItemCloseMessage from './menu_items/close_message';
 import MenuItemToggleMuteChannel from './menu_items/toggle_mute_channel';
+import MenuItemToggleReadOnlyChannel from './menu_items/toggle_readonly_channel';
 import MenuItemToggleFavoriteChannel from './menu_items/toggle_favorite_channel';
 import MenuItemViewPinnedPosts from './menu_items/view_pinned_posts';
 
@@ -49,7 +50,7 @@ export default class ChannelHeaderDropdown extends React.PureComponent {
         pluginMenuItems: PropTypes.arrayOf(PropTypes.object),
         isLicensedForLDAPGroups: PropTypes.bool,
     }
-
+    
     render() {
         const {
             user,
@@ -227,7 +228,13 @@ export default class ChannelHeaderDropdown extends React.PureComponent {
                         channelId={channel.id}
                         teamId={channel.team_id}
                         permissions={[channelPropertiesPermission]}
-                    >
+                    >   
+                         <MenuItemToggleReadOnlyChannel
+                            id='channelToggleReadOnlyChannel'
+                            user={user}
+                            channel={channel}
+                            isArchived={isArchived}
+                        />
                         <Menu.ItemToggleModalRedux
                             id='channelEditHeader'
                             show={channel.type !== Constants.DM_CHANNEL && channel.type !== Constants.GM_CHANNEL && !isArchived && !isReadonly}
