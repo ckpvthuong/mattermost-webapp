@@ -33,6 +33,7 @@ import FormattedMarkdownMessage from 'components/formatted_markdown_message';
 import {getSiteURL} from 'utils/url';
 
 import SelectTeamItem from './components/select_team_item';
+import { Channel } from 'mattermost-redux/types/channels';
 
 export const TEAMS_PER_PAGE = 30;
 const TEAM_MEMBERSHIP_DENIAL_ERROR_ID = 'api.team.add_members.user_denied';
@@ -59,6 +60,8 @@ type Props = {
     siteURL?: string;
     actions: Actions;
     totalTeamsCount: number;
+    currentChannel: Channel;
+    currentTeam: Team;
 };
 
 type State = {
@@ -186,7 +189,8 @@ export default class SelectTeam extends React.PureComponent<Props, State> {
             canCreateTeams,
             canJoinPublicTeams,
             canJoinPrivateTeams,
-
+            currentChannel,
+            currentTeam
             // totalTeamsCount,
         } = this.props;
 
@@ -342,11 +346,19 @@ export default class SelectTeam extends React.PureComponent<Props, State> {
             );
         }
 
+        let url = '/select_team';
+        if (currentTeam) {
+            url = `/${currentTeam.name}`;
+            if (currentChannel) {
+                url += `/channels/${currentChannel.name}`;
+            }
+        }
+
         let headerButton;
         if (this.state.error) {
             headerButton = <BackButton onClick={this.clearError}/>;
         } else if (isMemberOfTeam) {
-            headerButton = <BackButton/>;
+            headerButton = <BackButton url={url} />;
         } else {
             headerButton = (
                 <div className='signup-header'>
@@ -382,7 +394,7 @@ export default class SelectTeam extends React.PureComponent<Props, State> {
                             siteName={siteName}
                         />
                         {teamSignUp}
-                        {openContent}
+                        {/* {openContent} */}
                         {/* {adminConsoleLink} */}
                         {/* <input
                             id='teamURLInput'
