@@ -3,7 +3,7 @@
 
 import {connect} from 'react-redux';
 import {bindActionCreators, Dispatch, ActionCreatorsMapObject} from 'redux';
-import {getCurrentTeam} from 'mattermost-redux/selectors/entities/teams';
+import {getCurrentTeam, getTeam} from 'mattermost-redux/selectors/entities/teams';
 import {ActionFunc} from 'mattermost-redux/types/actions';
 
 import {ModalIdentifiers} from 'utils/constants';
@@ -13,6 +13,7 @@ import {openModal} from 'actions/views/modals';
 import {GlobalState} from 'types/store';
 
 import TeamMembersModal from './team_members_modal';
+import {getCurrentTeamSetting} from 'selectors/views/settings';
 
 type Actions = {
     openModal: (modalData: {modalId: string; dialogType: React.Component }) => Promise<{
@@ -22,9 +23,11 @@ type Actions = {
 
 function mapStateToProps(state: GlobalState) {
     const modalId = ModalIdentifiers.TEAM_MEMBERS;
+    const cts = getCurrentTeamSetting(state)
     return {
         currentTeam: getCurrentTeam(state),
         show: isModalOpen(state, modalId),
+        currentTeamSetting:  cts ? getTeam(state, cts.id) : null
     };
 }
 

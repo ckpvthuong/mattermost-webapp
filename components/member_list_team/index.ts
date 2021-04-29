@@ -7,8 +7,14 @@ import {bindActionCreators, Dispatch, ActionCreatorsMapObject} from 'redux';
 import {getTeamStats, getTeamMembers} from 'mattermost-redux/actions/teams';
 import {GetTeamMembersOpts, TeamStats, TeamMembership} from 'mattermost-redux/types/teams';
 import {haveITeamPermission} from 'mattermost-redux/selectors/entities/roles';
-import {getMembersInCurrentTeam, getCurrentTeamStats} from 'mattermost-redux/selectors/entities/teams';
-import {getProfilesInCurrentTeam, searchProfilesInCurrentTeam} from 'mattermost-redux/selectors/entities/users';
+import {getMembersInCurrentTeam, getCurrentTeamStats, 
+    getMembersInTeams,
+    getTeamStats as xgetTeamStats
+} 
+    from 'mattermost-redux/selectors/entities/teams';
+import {getProfilesInCurrentTeam, getProfilesInTeam, 
+        searchProfilesInCurrentTeam, searchProfilesInTeam} 
+        from 'mattermost-redux/selectors/entities/users';
 import {Permissions} from 'mattermost-redux/constants';
 import {searchProfiles} from 'mattermost-redux/actions/users';
 import {ActionFunc, GenericAction, ActionResult} from 'mattermost-redux/types/actions';
@@ -21,6 +27,7 @@ import {setModalSearchTerm} from 'actions/views/search';
 import {GlobalState} from 'types/store';
 
 import MemberListTeam from './member_list_team';
+import { getCurrentTeamSetting } from 'selectors/views/settings';
 
 type Props = {
     teamId: string;
@@ -49,18 +56,20 @@ function mapStateToProps(state: GlobalState, ownProps: Props) {
 
     let users;
     if (searchTerm) {
-        users = searchProfilesInCurrentTeam(state, searchTerm);
+        users = searchProfilesInTeam(state, ownProps.teamId, searchTerm);
     } else {
-        users = getProfilesInCurrentTeam(state);
+        users = getProfilesInTeam(state, ownProps.teamId);
     }
 
-    const stats = getCurrentTeamStats(state) || {active_member_count: 0};
+    const cts = getCurrentTeamSetting(state)
 
+    let stats = cts ? xgetTeamStats(state)[cts.id] : getCurrentTeamStats(state) ;
+    stats = stats || {active_member_count: 0}
     return {
         searchTerm,
         users,
-        teamMembers: getMembersInCurrentTeam(state) || {},
-        currentTeamId: state.entities.teams.currentTeamId,
+        teamMembers: cts ? getMembersInTeams(state)[cts.id] : getMembersInCurrentTeam(state) || {},
+        //currentTeamId: state.entities.teams.currentTeamId,
         totalTeamMembers: stats.active_member_count,
         canManageTeamMembers,
     };

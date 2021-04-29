@@ -18,7 +18,9 @@ type Props = {
         id: string;
         display_name: string;
     };
+    currentTeamSetting?: any;
     onHide: () => void;
+    onClose?: () => void;
     onLoad?: () => void;
     actions: {
         openModal: (modalData: {modalId: string; dialogType: any}) => Promise<{
@@ -47,11 +49,13 @@ export default class TeamMembersModal extends React.PureComponent<Props, State> 
     }
 
     handleHide = () => {
+        this.props.onClose && this.props.onClose();
         this.setState({show: false});
     }
 
     handleExit = () => {
         this.props.onHide();
+        this.props.onClose && this.props.onClose();
     }
 
     handleInvitePeople = () => {
@@ -66,9 +70,12 @@ export default class TeamMembersModal extends React.PureComponent<Props, State> 
     }
 
     render() {
+        let {currentTeam, currentTeamSetting} = this.props;
+        currentTeam = currentTeamSetting || currentTeam
+
         let teamDisplayName = '';
-        if (this.props.currentTeam) {
-            teamDisplayName = this.props.currentTeam.display_name;
+        if (currentTeam) {
+            teamDisplayName = currentTeam.display_name;
         }
 
         return (
@@ -94,8 +101,8 @@ export default class TeamMembersModal extends React.PureComponent<Props, State> 
                             }}
                         />
                     </Modal.Title>
-                    <TeamPermissionGate
-                        teamId={this.props.currentTeam.id}
+                    {/* <TeamPermissionGate
+                        teamId={currentTeam.id}
                         permissions={[Permissions.ADD_USER_TO_TEAM, Permissions.INVITE_GUEST]}
                     >
                         <button
@@ -109,11 +116,11 @@ export default class TeamMembersModal extends React.PureComponent<Props, State> 
                                 defaultMessage='Invite People'
                             />
                         </button>
-                    </TeamPermissionGate>
+                    </TeamPermissionGate> */}
                 </Modal.Header>
                 <Modal.Body>
                     <MemberListTeam
-                        teamId={this.props.currentTeam.id}
+                        teamId={currentTeam.id}
                     />
                 </Modal.Body>
             </Modal>

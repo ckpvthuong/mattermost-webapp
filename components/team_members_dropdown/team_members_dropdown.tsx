@@ -4,7 +4,7 @@
 import React from 'react';
 import {FormattedMessage} from 'react-intl';
 
-import {Team, TeamMembership} from 'mattermost-redux/types/teams';
+import {GetTeamMembersOpts, Team, TeamMembership} from 'mattermost-redux/types/teams';
 
 import {UserProfile} from 'mattermost-redux/types/users';
 
@@ -28,8 +28,10 @@ type Props = {
     currentTeam: Team;
     index: number;
     totalUsers: number;
+    cts: any
     actions: {
         getMyTeamMembers: () => void;
+        xgetTeamMembers: any
         getMyTeamUnreads: () => void;
         getUser: (id: string) => void;
         getTeamMember: (teamId: string, userId: string) => void;
@@ -72,8 +74,8 @@ export default class TeamMembersDropdown extends React.PureComponent<Props, Stat
                 this.props.actions.getUser(this.props.user.id);
                 this.props.actions.getTeamMember(this.props.teamMember.team_id, this.props.user.id);
                 if (this.props.user.id === me.id) {
-                    await this.props.actions.getMyTeamMembers();
-                    this.props.actions.getMyTeamUnreads();
+                    await this.props.actions.xgetTeamMembers(this.props.currentTeam.id);
+                    (!this.props.cts) && this.props.actions.getMyTeamUnreads();
                 }
             }
         }

@@ -54,8 +54,12 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
     async componentDidMount() {
         this.props.actions.closeRightHandSide();
         const myTeams = await this.props.actions.getTeamsForUserWithOptions(this.props.currentUser.id, {});
-        const { data } = await this.props.actions.getUserByEmail(this.props.currentTeam.email)
-        const orgTeams = await this.props.actions.getTeamsForUserWithOptions(data.id, {});
+        
+        let orgTeams: Team[] = [];
+        if (this.props.currentTeam.email){
+            const { data } = await this.props.actions.getUserByEmail(this.props.currentTeam.email)
+            orgTeams = await this.props.actions.getTeamsForUserWithOptions(data.id, {});
+        }
         this.setState({ myTeams: myTeams, orgTeams: orgTeams })
     }
 
@@ -65,9 +69,8 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
     }
 
     filterTeam = () => {
-        const myTeams = this.state.myTeams
+        const {myTeams, orgTeams} = this.state
         const myTeamsIds = myTeams.map((v, i, a) => v.id)
-        const orgTeams = this.state.orgTeams
         switch (this.state.filterValue) {
             case 'my_all':
                 return myTeams

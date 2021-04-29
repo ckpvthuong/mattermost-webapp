@@ -64,7 +64,7 @@ export default class TeamSettingsModal extends React.PureComponent<Props, State>
     }
 
     handleHide = () => {
-        
+        this.props.onClose && this.props.onClose()
         this.setState({show: false});
     }
 

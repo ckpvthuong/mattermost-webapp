@@ -23,7 +23,8 @@ import TeamPermissionGate from 'components/permissions_gates/team_permission_gat
 import { Permissions } from 'mattermost-redux/constants';
 import TeamSettingsModal from 'components/team_settings_modal';
 import Menu from 'components/widgets/menu/menu';
-import {injectIntl} from 'react-intl';
+import { injectIntl } from 'react-intl';
+import TeamMembersModal from 'components/team_members_modal';
 
 
 type Actions = {
@@ -102,12 +103,13 @@ class MyTeamItem extends React.PureComponent<Props, State> {
     }
 
     closeSetting = () => {
+        console.log("aaa")
         this.props.actions.setCurrentTeamSetting(null)
     }
 
     render() {
         const { team } = this.props;
-        const {formatMessage} = this.props.intl;
+        const { formatMessage } = this.props.intl;
 
         const settingsButton = (<>
 
@@ -129,7 +131,7 @@ class MyTeamItem extends React.PureComponent<Props, State> {
             >
                 <Popover
                     className='team_settings_pop'
-                    style={{margin:0}}
+                    style={{ margin: 0 }}
                 >
                     <Menu
                         ariaLabel={'menu_team_setts'}
@@ -137,7 +139,7 @@ class MyTeamItem extends React.PureComponent<Props, State> {
                         <Menu.Group>
                             <div onClick={this.openSetting} >
                                 <TeamPermissionGate
-                                    teamId={this.props.team.id}
+                                    teamId={team.id}
                                     permissions={[Permissions.MANAGE_TEAM]}
                                 >   <ul style={{ listStyleType: 'none' }}>
                                         <Menu.ItemToggleModalRedux
@@ -145,10 +147,39 @@ class MyTeamItem extends React.PureComponent<Props, State> {
                                             modalId={ModalIdentifiers.TEAM_SETTINGS}
                                             dialogType={TeamSettingsModal}
                                             dialogProps={{ onClose: this.closeSetting }}
-                                            text={formatMessage({id: 'myteams.settings', defaultMessage: 'Team Settings'})}
+                                            text={formatMessage({ id: 'myteams.settings', defaultMessage: 'Team Settings' })}
                                         />
 
                                     </ul>
+                                </TeamPermissionGate>
+                            </div>
+                            <div onClick={this.openSetting} >
+                                <TeamPermissionGate
+                                    teamId={team.id}
+                                    permissions={[Permissions.REMOVE_USER_FROM_TEAM, Permissions.MANAGE_TEAM_ROLES]}
+                                >
+                                    <Menu.ItemToggleModalRedux
+                                        id='manageMembers'
+                                        modalId={ModalIdentifiers.TEAM_MEMBERS}
+                                        dialogType={TeamMembersModal}
+                                        text={formatMessage({ id: 'navbar_dropdown.manageMembers', defaultMessage: 'Manage Members' })}
+                                        dialogProps={{ onClose: this.closeSetting }}
+                                    />
+                                </TeamPermissionGate>
+                            </div>
+                            <div onClick={this.openSetting} >
+                                <TeamPermissionGate
+                                    teamId={team.id}
+                                    permissions={[Permissions.REMOVE_USER_FROM_TEAM, Permissions.MANAGE_TEAM_ROLES]}
+                                    invert={true}
+                                >
+                                    <Menu.ItemToggleModalRedux
+                                        id='viewMembers'
+                                        modalId={ModalIdentifiers.TEAM_MEMBERS}
+                                        dialogType={TeamMembersModal}
+                                        text={formatMessage({ id: 'navbar_dropdown.viewMembers', defaultMessage: 'View Members' })}
+                                        dialogProps={{ onClose: this.closeSetting }}
+                                    />
                                 </TeamPermissionGate>
                             </div>
                         </Menu.Group>

@@ -16,13 +16,18 @@ import TeamMembersDropdown from 'components/team_members_dropdown';
 
 const USERS_PER_PAGE = 50;
 
+type TeamMembers = {
+    [userId: string]: TeamMembership;
+}
+
 type Props = {
     searchTerm: string;
     users: UserProfile[];
     teamMembers: {
         [userId: string]: TeamMembership;
     };
-    currentTeamId: string;
+    // currentTeamId: string;
+    teamId: string;
     totalTeamMembers: number;
     canManageTeamMembers?: boolean;
     actions: {
@@ -60,16 +65,17 @@ export default class MemberListTeam extends React.PureComponent<Props, State> {
     }
 
     async componentDidMount() {
-        await Promise.all([
-            this.props.actions.loadProfilesAndTeamMembers(0, Constants.PROFILE_CHUNK_SIZE, this.props.currentTeamId, {active: true}),
-            this.props.actions.getTeamMembers(this.props.currentTeamId, 0, Constants.DEFAULT_MAX_USERS_PER_TEAM,
+        const arr = await Promise.all([
+            this.props.actions.loadProfilesAndTeamMembers(0, Constants.PROFILE_CHUNK_SIZE, this.props.teamId, {active: true}),
+            this.props.actions.getTeamMembers(this.props.teamId, 0, Constants.DEFAULT_MAX_USERS_PER_TEAM,
                 {
                     sort: Teams.SORT_USERNAME_OPTION,
                     exclude_deleted_users: true,
                 } as GetTeamMembersOpts,
             ),
-            this.props.actions.getTeamStats(this.props.currentTeamId),
+            this.props.actions.getTeamStats(this.props.teamId),
         ]);
+        
         this.loadComplete();
     }
 
@@ -95,7 +101,7 @@ export default class MemberListTeam extends React.PureComponent<Props, State> {
                         loadTeamMembersForProfilesList,
                         searchProfiles,
                     } = this.props.actions;
-                    const {data} = await searchProfiles(searchTerm, {team_id: this.props.currentTeamId});
+                    const {data} = await searchProfiles(searchTerm, {team_id: this.props.teamId});
 
                     if (searchTimeoutId !== this.searchTimeoutId) {
                         return;
@@ -104,7 +110,7 @@ export default class MemberListTeam extends React.PureComponent<Props, State> {
                     this.setState({loading: true});
 
                     loadStatusesForProfilesList(data);
-                    loadTeamMembersForProfilesList(data, this.props.currentTeamId, true).then(({data: membersLoaded}) => {
+                    loadTeamMembersForProfilesList(data, this.props.teamId, true).then(({data: membersLoaded}) => {
                         if (membersLoaded) {
                             this.loadComplete();
                         }
@@ -123,16 +129,17 @@ export default class MemberListTeam extends React.PureComponent<Props, State> {
 
     nextPage = async (page: number) => {
         this.setState({loading: true});
-        await Promise.all([
-            this.props.actions.loadProfilesAndTeamMembers(page, USERS_PER_PAGE, this.props.currentTeamId, {active: true}),
-            this.props.actions.getTeamMembers(this.props.currentTeamId, page, Constants.DEFAULT_MAX_USERS_PER_TEAM,
+        const arr = await Promise.all([
+            this.props.actions.loadProfilesAndTeamMembers(page, USERS_PER_PAGE, this.props.teamId, {active: true}),
+            this.props.actions.getTeamMembers(this.props.teamId, page, Constants.DEFAULT_MAX_USERS_PER_TEAM,
                 {
                     sort: Teams.SORT_USERNAME_OPTION,
                     exclude_deleted_users: true,
                 } as GetTeamMembersOpts,
             ),
         ]);
-        this.loadComplete();
+        //this.loadComplete();
+        this.setState({loading: false})
     }
 
     search = (term: string) => {
@@ -144,9 +151,18 @@ export default class MemberListTeam extends React.PureComponent<Props, State> {
         if (this.props.canManageTeamMembers) {
             teamMembersDropdown = [TeamMembersDropdown];
         }
+        
+        const {totalTeamMembers} = this.props
+        
+        // let teamMembers: {
+        //     [userId: string]: TeamMembership;
+        // } = {};
+        //this.props.teamMembers.forEach( (item: any) => {teamMembers = {...teamMembers, [item.user_id]: item}} )
+        
+        const teamMembers = this.props.teamMembers
 
-        const teamMembers = this.props.teamMembers;
         const users = this.props.users;
+        console.log(users)
         const actionUserProps: {
             [userId: string]: {
                 teamMember: TeamMembership;
@@ -170,12 +186,12 @@ export default class MemberListTeam extends React.PureComponent<Props, State> {
                 }
             }
         }
-
+        console.log(usersToDisplay)
         return (
             <SearchableUserList
                 users={usersToDisplay}
                 usersPerPage={USERS_PER_PAGE}
-                total={this.props.totalTeamMembers}
+                total={totalTeamMembers}
                 nextPage={this.nextPage}
                 search={this.search}
                 actions={teamMembersDropdown}
