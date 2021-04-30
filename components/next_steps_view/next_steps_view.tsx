@@ -16,6 +16,8 @@ import MyTeamItem from 'components/my_team/my_team_item';
 import CloseIcon from 'components/widgets/icons/close_icon';
 import './next_steps_view.scss';
 import { getSiteURL } from 'utils/url';
+import team from 'components/admin_console/team_channel_settings/team';
+import { t } from 'utils/i18n';
 
 
 
@@ -77,9 +79,13 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
             case 'my_created':
                 return myTeams.filter(team => team.email == this.props.currentUser.email)
             case 'org_pub_can_join':
-                return orgTeams.filter(team => team.type === 'O' && (!myTeamsIds.includes(team.id)))
+                return orgTeams.filter(team => team.allow_open_invite === true
+                                                &&(!myTeamsIds.includes(team.id)) 
+                                                &&team.email == this.props.currentTeam.email)
             case 'org_pri_cant_join':
-                return orgTeams.filter(team => team.type === 'I' && (!myTeamsIds.includes(team.id)))
+                return orgTeams.filter(team => team.allow_open_invite === false 
+                                                && (!myTeamsIds.includes(team.id)) 
+                                                &&team.email == this.props.currentTeam.email)
             case 'org_all':
                 return orgTeams
             default:
@@ -92,8 +98,11 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
     }
 
     render() {
+        const {currentTeam} = this.props
+        
+        let teamArr = this.filterTeam()
 
-        const renderListTeam = this.filterTeam().map(team =>
+        const renderListTeam = teamArr.map(team =>
         (
             <MyTeamItem
                 key={'team_' + team.name}

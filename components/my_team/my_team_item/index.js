@@ -7,11 +7,12 @@ import {setCurrentTeamSetting} from 'actions/views/settings'
 
 import MyTeamItem from './my_team_item';
 
-import {getCurrentTeam, getTeam} from 'mattermost-redux/selectors/entities/teams';
+import {getCurrentTeam,  getTeam} from 'mattermost-redux/selectors/entities/teams';
 
 function mapStateToProps(state, ownProps) {
     return {
-        team:  getTeam(state, ownProps.team_id)
+        team:  getTeam(state, ownProps.team_id),
+        currentTeam: getCurrentTeam(state)
     };
 }
 

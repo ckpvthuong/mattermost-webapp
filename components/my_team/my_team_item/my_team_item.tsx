@@ -33,6 +33,7 @@ type Actions = {
 
 type Props = {
     team: Team;
+    currentTeam: Team;
     onTeamClick: (url: string) => void;
     actions: Actions
     intl: any
@@ -108,7 +109,7 @@ class MyTeamItem extends React.PureComponent<Props, State> {
     }
 
     render() {
-        const { team } = this.props;
+        const { team, currentTeam } = this.props;
         const { formatMessage } = this.props.intl;
 
         const settingsButton = (<>
@@ -188,10 +189,10 @@ class MyTeamItem extends React.PureComponent<Props, State> {
             </Overlay>
         </>
         )
-
+            const container_style = currentTeam.id === team.id ? {backgroundColor: '#EDEBE9'} : {}
         return (
-
-            <div className='select_team_item col-xs-4'>
+            
+            <div className='select_team_item col-xs-4' style={container_style}>
                 {settingsButton}
                 <a
                     href='#'
