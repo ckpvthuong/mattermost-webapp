@@ -182,6 +182,23 @@ export default class GeneralTab extends React.PureComponent {
             this.updateSection('');
         }
     }
+//==============================================================================
+
+handleDeleteTeamSubmit = async () => {
+    var state = {serverError: '', clientError: ''};
+
+    this.setState(state);
+
+    const {error} = await this.props.actions.deleteTeam(this.props.team.id);
+
+    if (error) {
+        state.serverError = error.message;
+        this.setState(state);
+    } else {
+        this.updateSection('');
+    }
+}
+//================================================================================
 
     handleInviteIdSubmit = async () => {
         const state = {serverError: '', clientError: ''};
@@ -576,6 +593,49 @@ export default class GeneralTab extends React.PureComponent {
                 />
             );
         }
+//==============================================================================
+let deleteTeamSection;
+
+        if (this.props.activeSection === 'deleteTeam') {
+            const inputs = [];
+            inputs.push(
+                <div
+                    key='deleteTeamSetting'
+                >
+                </div>,
+            );
+
+            const deleteTeamExtraInfo = <span>{Utils.localizeMessage('general_tab.deleteTeamInfo', 'This will mark this team is hide from UI but remain in database. WARNING: Current has not CONFIRM modal, so be careful!')}</span>;
+
+            deleteTeamSection = (
+                <SettingItemMax
+                    title={Utils.localizeMessage('general_tab.deleteTeam', 'Delete Team')}
+                    submit={this.handleDeleteTeamSubmit}
+                    serverError={serverError}
+                    clientError={clientError}
+                    updateSection={this.handleUpdateSection}
+                    extraInfo={deleteTeamExtraInfo}
+                    inputs={inputs}
+                    saveButtonText={Utils.localizeMessage('general_tab.delete', 'Delete')}
+                    saveButtonClass="btn-danger"
+                />
+            );
+        } else {
+            var describe = Utils.localizeMessage('general_tab.desTeamDelete', 'Click to show more about Team Delete')
+
+            deleteTeamSection = (
+                <SettingItemMin
+                    title={Utils.localizeMessage('general_tab.deleteTeam', 'Delete Team')}
+                    describe={describe}
+                    updateSection={this.handleUpdateSection}
+                    section={'deleteTeam'}
+                    disableEditButton={true}
+                />
+            );
+        }
+//====================================================================================
+
+
 
         let descriptionSection;
 
@@ -831,6 +891,8 @@ export default class GeneralTab extends React.PureComponent {
                             {inviteSection}
                         </>
                     }
+                    <div className='divider-light'/>
+                    {deleteTeamSection}
                     <div className='divider-dark'/>
                 </div>
             </div>

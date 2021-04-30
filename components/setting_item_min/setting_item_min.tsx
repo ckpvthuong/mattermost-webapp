@@ -20,6 +20,11 @@ interface Props {
     disableOpen?: boolean;
 
     /**
+     * Option to disable opening the setting
+     */
+     disableEditButton?: boolean;
+
+    /**
      * Settings or tab section
      */
     section: string;
@@ -57,7 +62,7 @@ export default class SettingItemMin extends React.PureComponent<Props> {
     render(): JSX.Element {
         let editButton = null;
         let describeSection = null;
-
+        
         if (!this.props.disableOpen && isMobile()) {
             editButton = (
                 <div className='section-min__edit'>
@@ -91,6 +96,10 @@ export default class SettingItemMin extends React.PureComponent<Props> {
                     </button>
                 </div>
             );
+
+            if (this.props.disableEditButton){
+                editButton=null
+            }
 
             describeSection = (
                 <div

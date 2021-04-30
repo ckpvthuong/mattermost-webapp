@@ -111,6 +111,11 @@ export default class SettingItemMax extends React.PureComponent {
          * Text of save button
          */
         saveButtonText: PropTypes.string,
+
+         /**
+         * save button style
+         */
+          saveButtonClass: PropTypes.string,
     }
 
     constructor(props) {
@@ -213,6 +218,7 @@ export default class SettingItemMax extends React.PureComponent {
                     saving={this.props.saving}
                     disabled={this.props.saving}
                     onClick={this.handleSubmit}
+                    btnClass={this.props.saveButtonClass}
                 />
             );
         }
