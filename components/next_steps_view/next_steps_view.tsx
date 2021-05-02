@@ -59,8 +59,12 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
         
         let orgTeams: Team[] = [];
         if (this.props.currentTeam.email){
-            const { data } = await this.props.actions.getUserByEmail(this.props.currentTeam.email)
-            orgTeams = await this.props.actions.getTeamsForUserWithOptions(data.id, {});
+            if (this.props.currentTeam.email === this.props.currentUser.email) {
+                orgTeams =  myTeams.filter((team: { email: any; }) => team.email == this.props.currentUser.email)
+            } else {
+                const { data } = await this.props.actions.getUserByEmail(this.props.currentTeam.email)
+                orgTeams = await this.props.actions.getTeamsForUserWithOptions(data.id, {created: true});
+            }
         }
         this.setState({ myTeams: myTeams, orgTeams: orgTeams })
     }
@@ -82,12 +86,15 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
                 return orgTeams.filter(team => team.allow_open_invite === true
                                                 &&(!myTeamsIds.includes(team.id)) 
                                                 &&team.email == this.props.currentTeam.email)
-            case 'org_pri_cant_join':
-                return orgTeams.filter(team => team.allow_open_invite === false 
-                                                && (!myTeamsIds.includes(team.id)) 
+            case 'all_org_pub':
+                return orgTeams.filter(team => team.allow_open_invite === true 
                                                 &&team.email == this.props.currentTeam.email)
-            case 'org_all':
-                return orgTeams
+            // case 'org_pri_cant_join':
+            //     return orgTeams.filter(team => team.allow_open_invite === false 
+            //                                     && (!myTeamsIds.includes(team.id)) 
+            //                                     &&team.email == this.props.currentTeam.email)
+            // case 'org_all':
+            //     return orgTeams
             default:
                 return myTeams
         }
@@ -187,9 +194,10 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
             >
                 <option value={'my_all'}>{Utils.localizeMessage('myteams.my_all', 'My All Teams')}</option>
                 <option value={'my_created'}>{Utils.localizeMessage('myteams.my_created', 'My Created')}</option>
-                <option value={'org_pub_can_join'}>{Utils.localizeMessage('myteams.org_pub_can_join', 'Organization Public Teams')}</option>
-                <option value={'org_pri_cant_join'}>{Utils.localizeMessage('myteams.org_pri_cant_join', 'Organization Private Teams')}</option>
-                <option value={'org_all'}>{Utils.localizeMessage('myteams.org_all', 'Organization All Teams')}</option>
+                <option value={'org_pub_can_join'}>{Utils.localizeMessage('myteams.org_pub_can_join', 'Organization Public Teams you can join')}</option>
+                <option value={'all_org_pub'}>{Utils.localizeMessage('myteams.all_org_pub', 'All Organization Public Teams')}</option>
+                {/* <option value={'org_pri_cant_join'}>{Utils.localizeMessage('myteams.org_pri_cant_join', 'Organization Private Teams')}</option>
+                <option value={'org_all'}>{Utils.localizeMessage('myteams.org_all', 'Organization All Teams')}</option> */}
             </select>
         )
 
