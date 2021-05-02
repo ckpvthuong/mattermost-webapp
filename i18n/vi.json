@@ -2913,7 +2913,7 @@
   "integrations.successful": "Kiểm tra thành công",
   "interactive_dialog.cancel": "Hủy",
   "interactive_dialog.element.optional": "(không bắt buộc)",
-  "intro_messages.DM": "Đây là phần bắt đầu lịch sử tin nhắn trực tiếp của bạn với {đồng đội}.\nTệp và tin nhắn trực tiếp được chia sẻ ở đây sẽ không hiển thị với những người bên ngoài khu vực này.",
+  "intro_messages.DM": "Đây là phần bắt đầu lịch sử tin nhắn trực tiếp của bạn với {teammate}.\nTệp và tin nhắn trực tiếp được chia sẻ ở đây sẽ không hiển thị với những người bên ngoài khu vực này.",
   "intro_messages.GM": "Đây là thời điểm bắt đầu lịch sử tin nhắn nhóm của bạn với {names}.\n Các tin nhắn và tệp được chia sẻ ở đây sẽ không hiển thị với những người bên ngoài khu vực này.",
   "intro_messages.addGroups": "Thêm nhóm vào kênh riêng tư này",
   "intro_messages.addGroupsToTeam": "Thêm các nhóm khác vào đội này",
