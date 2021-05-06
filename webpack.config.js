@@ -436,7 +436,7 @@ if (targetIsDevServer) {
                     return '/static/root.html';
                 },
                 logLevel: 'silent',
-                target: 'http://localhost:8065',
+                target: 'http://128.199.150.82:8065',
                 xfwd: true,
                 ws: true,
             }],

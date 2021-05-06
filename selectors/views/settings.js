@@ -9,6 +9,10 @@ export function getCurrentTeamSetting(state) {
     return state.views.settings.current_team_setting;
 }
 
+export function getShowTeamsManagement(state) {
+    return state.views.settings.show_teams_management;
+}
+
 export const getRelativeTeamUrl = reselect_1.createSelector(getCurrentTeamSetting, function (team) {
     if (!team) {t
         return '/';

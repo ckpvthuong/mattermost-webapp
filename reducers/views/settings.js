@@ -14,6 +14,10 @@ export default function settings(state = {}, action) {
         return {
             current_team_setting: action.data,
         };
+    case ActionTypes.SET_SHOW_TEAMS_MANAGEMENT:
+        return {
+            show_teams_management: action.data,
+        };
     default:
         return state;
     }

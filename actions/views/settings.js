@@ -16,3 +16,10 @@ export function setCurrentTeamSetting(team) {
         data: team,
     };
 }
+
+export function setShowTeamsManagement(op) {
+    return {
+        type: ActionTypes.SET_SHOW_TEAMS_MANAGEMENT,
+        data: op,
+    };
+}

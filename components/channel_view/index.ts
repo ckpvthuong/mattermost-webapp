@@ -11,6 +11,8 @@ import {getRoles} from 'mattermost-redux/selectors/entities/roles_helpers';
 import {getCurrentUserId} from 'mattermost-redux/selectors/entities/users';
 import {getConfig, getLicense} from 'mattermost-redux/selectors/entities/general';
 import {withRouter} from 'react-router-dom';
+import {getShowTeamsManagement} from 'selectors/views/settings';
+import {setShowTeamsManagement} from 'actions/views/settings';
 
 import {getProfiles} from 'mattermost-redux/actions/users';
 
@@ -32,6 +34,7 @@ import ChannelView from './channel_view';
 type Actions = {
     goToLastViewedChannel: () => Promise<{data: boolean}>;
     setShowNextStepsView: (show: boolean) => Action;
+    setShowTeamsManagement: (show: boolean) => Action;
     getProfiles: (page?: number, perPage?: number, options?: Record<string, string | boolean>) => ActionFunc;
 }
 
@@ -81,6 +84,7 @@ function mapStateToProps(state: GlobalState) {
         channelIsArchived: channel ? channel.delete_at !== 0 : false,
         viewArchivedChannels,
         isCloud: getLicense(state).Cloud === 'true',
+        showTeamsManagement: getShowTeamsManagement(state)
     };
 }
 
@@ -90,6 +94,7 @@ function mapDispatchToProps(dispatch: Dispatch<GenericAction>) {
             setShowNextStepsView,
             goToLastViewedChannel,
             getProfiles,
+            setShowTeamsManagement,
         }, dispatch),
     };
 }

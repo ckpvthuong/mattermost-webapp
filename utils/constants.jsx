@@ -192,6 +192,7 @@ export const ActionTypes = keyMirror({
 
     UPDATE_ACTIVE_SECTION: null,
     SET_CURRENT_TEAM_SETTING: null,
+    SET_SHOW_TEAMS_MANAGEMENT: null,
 
     RECEIVED_MARKETPLACE_PLUGINS: null,
     INSTALLING_MARKETPLACE_PLUGIN: null,

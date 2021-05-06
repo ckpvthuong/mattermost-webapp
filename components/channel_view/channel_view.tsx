@@ -21,6 +21,7 @@ type Props = {
     channelId: string;
     deactivatedChannel: boolean;
     channelRolesLoading: boolean;
+    showTeamsManagement: boolean;
     match: {
         url: string;
         params: {
@@ -38,6 +39,7 @@ type Props = {
     actions: {
         goToLastViewedChannel: () => Promise<{data: boolean}>;
         setShowNextStepsView: (show: boolean) => Action;
+        setShowTeamsManagement: (show: boolean) => Action;
         getProfiles: (page?: number, perPage?: number, options?: Record<string, string | boolean>) => ActionFunc;
     };
 };
@@ -116,8 +118,12 @@ export default class ChannelView extends React.PureComponent<Props, State> {
     async componentDidMount() {
         await this.props.actions.getProfiles();
         //if ((this.props.showNextSteps || this.props.showNextStepsTips) && !this.props.isOnboardingHidden) {
-            this.props.actions.setShowNextStepsView(true);
+            //this.props.actions.setShowNextStepsView(true);
         //}
+        if (!this.props.showTeamsManagement){
+            this.props.actions.setShowNextStepsView(true)
+            this.props.actions.setShowTeamsManagement(true)
+        } 
     }
 
     componentDidUpdate(prevProps: Props) {
