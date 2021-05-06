@@ -10,6 +10,9 @@ import {Permissions} from 'mattermost-redux/constants';
 import {haveITeamPermission} from 'mattermost-redux/selectors/entities/roles';
 
 import TeamGeneralTab from './team_general_tab.jsx';
+import {openModal} from 'actions/views/modals';
+import {redirectUserToDefaultTeam} from 'actions/global_actions';
+import {setCurrentTeamSetting} from 'actions/views/settings'
 
 function mapStateToProps(state, ownProps) {
     const config = getConfig(state);
@@ -31,7 +34,10 @@ function mapDispatchToProps(dispatch) {
             regenerateTeamInviteId,
             removeTeamIcon,
             setTeamIcon,
-            deleteTeam
+            deleteTeam,
+            openModal,
+            redirectUserToDefaultTeam,
+            setCurrentTeamSetting,
         }, dispatch),
     };
 }

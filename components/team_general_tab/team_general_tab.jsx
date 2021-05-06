@@ -8,6 +8,7 @@ import React from 'react';
 import {FormattedMessage, FormattedDate} from 'react-intl';
 
 import Constants from 'utils/constants';
+import {ModalIdentifiers} from 'utils/constants';
 import * as Utils from 'utils/utils.jsx';
 import SettingItemMax from 'components/setting_item_max.jsx';
 import SettingItemMin from 'components/setting_item_min';
@@ -15,8 +16,10 @@ import SettingPicture from 'components/setting_picture.jsx';
 import BackIcon from 'components/widgets/icons/fa_back_icon';
 import LocalizedInput from 'components/localized_input/localized_input';
 import FormattedMarkdownMessage from 'components/formatted_markdown_message';
-
+import DeleteTeamModal from 'components/delete_team_modal'
+import {browserHistory} from 'utils/browser_history';
 import {t} from 'utils/i18n.jsx';
+
 
 const ACCEPTED_TEAM_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/bmp'];
 
@@ -34,6 +37,9 @@ export default class GeneralTab extends React.PureComponent {
             regenerateTeamInviteId: PropTypes.func.isRequired,
             removeTeamIcon: PropTypes.func.isRequired,
             setTeamIcon: PropTypes.func.isRequired,
+            openModal: PropTypes.func.isRequired,
+            redirectUserToDefaultTeam: PropTypes.func.isRequired,
+            setCurrentTeamSetting:  PropTypes.func.isRequired,
         }).isRequired,
         canInviteTeamMembers: PropTypes.bool.isRequired,
     }
@@ -188,16 +194,37 @@ handleDeleteTeamSubmit = async () => {
     var state = {serverError: '', clientError: ''};
 
     this.setState(state);
+    
+    this.props.closeModal()
 
     const {error} = await this.props.actions.deleteTeam(this.props.team.id);
+    
 
     if (error) {
         state.serverError = error.message;
         this.setState(state);
     } else {
-        this.updateSection('');
+        //this.updateSection('');
+       // this.props.actions.redirectUserToDefaultTeam()
+        setTimeout(() => {
+            this.props.actions.redirectUserToDefaultTeam()
+        }, 1000)
     }
+    
 }
+
+openModalDeleteConfirm = () => {
+    const modalData = {
+        ModalId: ModalIdentifiers.DELETE_TEAM,
+        dialogType: DeleteTeamModal,
+        dialogProps: {
+          deleteTeam: this.handleDeleteTeamSubmit
+            
+        },
+    };
+    this.props.actions.openModal(modalData)
+}
+
 //================================================================================
 
     handleInviteIdSubmit = async () => {
@@ -610,7 +637,7 @@ let deleteTeamSection;
             deleteTeamSection = (
                 <SettingItemMax
                     title={Utils.localizeMessage('general_tab.deleteTeam', 'Delete Team')}
-                    submit={this.handleDeleteTeamSubmit}
+                    submit={this.openModalDeleteConfirm}
                     serverError={serverError}
                     clientError={clientError}
                     updateSection={this.handleUpdateSection}

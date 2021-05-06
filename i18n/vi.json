@@ -4143,6 +4143,9 @@
   "myteams.all_org_pub": "Tất cả các đội công khai tạo bởi chủ đội hiện tại",
   "myteams.or": "hoặc",
   "myteams.join_by_code": "Tham gia bằng mã",
+  "myteams.search_message": "Tìm kiếm các đội mở khác",
+  "myteams.search_button": "Tìm kiếm",
+  "myteams.searchTeamsHeader": "Click để tham gia vào đội công khai",
   "channel_header.unreadonly" : "Tắt tính năng chỉ đọc",
   "channel_header.readonly": "Bật tính năng chỉ đọc",
   "general_tab.deleteTeamInfo": "Xóa đội sẽ đánh dấu đội này sẽ không hiển thị trên các giao diện người dùng. Tuy nhiên dữ liệu vẫn còn lưu trong cơ sở dữ liệu.",
@@ -4150,5 +4153,7 @@
   "general_tab.deleteTeam": "Xóa Đội",
   "general_tab.desTeamDelete" : "Click để xem thêm thông tin về xóa đội",
   "cus_footer.brand": "WETEAMS.NET",
-  "cus_footer.copyright": "weteams.net"
+  "cus_footer.copyright": "weteams.net",
+  "delete_team.question": "Bạn có chắc là muốn xóa đội này ?",
+  "delete_team.confirm": "Xác nhận xóa đội"
 }

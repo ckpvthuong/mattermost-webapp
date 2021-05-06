@@ -18,7 +18,10 @@ import './next_steps_view.scss';
 import { getSiteURL } from 'utils/url';
 import team from 'components/admin_console/team_channel_settings/team';
 import { t } from 'utils/i18n';
-
+import ToggleModalButtonRedux from 'components/toggle_modal_button_redux';
+import { ModalIdentifiers } from 'utils/constants';
+import JoinTeamModal from 'components/join_team_modal';
+import CusJoinTeamModal from 'components/cus_join_team_modal';
 
 
 // import OnboardingSuccessSvg from './images/onboarding-success-svg';
@@ -56,14 +59,14 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
     async componentDidMount() {
         this.props.actions.closeRightHandSide();
         const myTeams = await this.props.actions.getTeamsForUserWithOptions(this.props.currentUser.id, {});
-        
+
         let orgTeams: Team[] = [];
-        if (this.props.currentTeam.email){
+        if (this.props.currentTeam.email) {
             if (this.props.currentTeam.email === this.props.currentUser.email) {
-                orgTeams =  myTeams.filter((team: { email: any; }) => team.email == this.props.currentUser.email)
+                orgTeams = myTeams.filter((team: { email: any; }) => team.email == this.props.currentUser.email)
             } else {
                 const { data } = await this.props.actions.getUserByEmail(this.props.currentTeam.email)
-                orgTeams = await this.props.actions.getTeamsForUserWithOptions(data.id, {created: true});
+                orgTeams = await this.props.actions.getTeamsForUserWithOptions(data.id, { created: true });
             }
         }
         this.setState({ myTeams: myTeams, orgTeams: orgTeams })
@@ -75,7 +78,7 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
     }
 
     filterTeam = () => {
-        const {myTeams, orgTeams} = this.state
+        const { myTeams, orgTeams } = this.state
         const myTeamsIds = myTeams.map((v, i, a) => v.id)
         switch (this.state.filterValue) {
             case 'my_all':
@@ -84,11 +87,11 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
                 return myTeams.filter(team => team.email == this.props.currentUser.email)
             case 'org_pub_can_join':
                 return orgTeams.filter(team => team.allow_open_invite === true
-                                                &&(!myTeamsIds.includes(team.id)) 
-                                                &&team.email == this.props.currentTeam.email)
+                    && (!myTeamsIds.includes(team.id))
+                    && team.email == this.props.currentTeam.email)
             case 'all_org_pub':
-                return orgTeams.filter(team => team.allow_open_invite === true 
-                                                &&team.email == this.props.currentTeam.email)
+                return orgTeams.filter(team => team.allow_open_invite === true
+                    && team.email == this.props.currentTeam.email)
             // case 'org_pri_cant_join':
             //     return orgTeams.filter(team => team.allow_open_invite === false 
             //                                     && (!myTeamsIds.includes(team.id)) 
@@ -105,8 +108,8 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
     }
 
     render() {
-        const {currentTeam} = this.props
-        
+        const { currentTeam } = this.props
+
         let teamArr = this.filterTeam()
 
         const renderListTeam = teamArr.map(team =>
@@ -161,12 +164,12 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
         const renderHeader = (
             <div className='NextStepsView__header' style={{ padding: 0, alignItems: 'baseline' }}>
                 {renderLinkCreateTeam}
-                <i style={{marginLeft: 10, marginRight:10}}>
+                <span style={{ marginLeft: 10, marginRight: 10 }}>
                     <FormattedMessage
                         id='myteams.or'
                         defaultMessage='or'
                     />
-                </i>
+                </span>
 
                 {renderInvite}
                 <CloseIcon
@@ -185,20 +188,42 @@ export default class NextStepsView extends React.PureComponent<Props, State> {
         )
 
         const renderFilter = (
-            <select
-                id='myteamsfilter'
-                className='form-control'
-                value={this.state.filterValue}
-                onChange={this.handleFilterChange}
-                style={{ marginLeft: 0 , width: 500}}
-            >
-                <option value={'my_all'}>{Utils.localizeMessage('myteams.my_all', 'My All Teams')}</option>
-                <option value={'my_created'}>{Utils.localizeMessage('myteams.my_created', 'My Created')}</option>
-                <option value={'org_pub_can_join'}>{Utils.localizeMessage('myteams.org_pub_can_join', 'Organization Public Teams you can join')}</option>
-                <option value={'all_org_pub'}>{Utils.localizeMessage('myteams.all_org_pub', 'All Organization Public Teams')}</option>
-                {/* <option value={'org_pri_cant_join'}>{Utils.localizeMessage('myteams.org_pri_cant_join', 'Organization Private Teams')}</option>
+            <div>
+                <select
+                    id='myteamsfilter'
+                    className='form-control'
+                    value={this.state.filterValue}
+                    onChange={this.handleFilterChange}
+                    style={{ marginLeft: 0, width: 500 }}
+                >
+                    <option value={'my_all'}>{Utils.localizeMessage('myteams.my_all', 'My All Teams')}</option>
+                    <option value={'my_created'}>{Utils.localizeMessage('myteams.my_created', 'My Created')}</option>
+                    <option value={'org_pub_can_join'}>{Utils.localizeMessage('myteams.org_pub_can_join', 'Organization Public Teams you can join')}</option>
+                    <option value={'all_org_pub'}>{Utils.localizeMessage('myteams.all_org_pub', 'All Organization Public Teams')}</option>
+                    {/* <option value={'org_pri_cant_join'}>{Utils.localizeMessage('myteams.org_pri_cant_join', 'Organization Private Teams')}</option>
                 <option value={'org_all'}>{Utils.localizeMessage('myteams.org_all', 'Organization All Teams')}</option> */}
-            </select>
+                </select>
+                <span style={{ marginLeft: 10, marginRight: 10 }}>
+                    <FormattedMessage
+                        id='myteams.search_message'
+                        defaultMessage='Search'
+                    />
+                </span>
+
+                <ToggleModalButtonRedux
+                    id='joinTeam'
+                    modalId={ModalIdentifiers.JOIN_ANOTHER_TEAM}
+                    dialogType={CusJoinTeamModal}
+                >
+                    <button className="btn btn-primary">
+                        <FormattedMessage
+                            id='myteams.search_button'
+                            defaultMessage='Search'
+                        />
+                    </button>
+
+                </ToggleModalButtonRedux>
+            </div>
         )
 
         const renderBody = (

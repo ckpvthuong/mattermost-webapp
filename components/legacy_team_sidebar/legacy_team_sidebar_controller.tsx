@@ -242,7 +242,7 @@ export default class LegacyTeamSidebar extends React.PureComponent<Props, State>
                 <TeamButton
                     btnClass='team-btn__add'
                     key='more_teams'
-                    url='/select_team'
+                    url='/create_team'
                     tip={
                         <FormattedMessage
                             id='team_sidebar.join'
