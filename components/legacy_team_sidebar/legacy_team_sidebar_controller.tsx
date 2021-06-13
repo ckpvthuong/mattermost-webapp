@@ -245,8 +245,8 @@ export default class LegacyTeamSidebar extends React.PureComponent<Props, State>
                     url='/create_team'
                     tip={
                         <FormattedMessage
-                            id='team_sidebar.join'
-                            defaultMessage='Other teams you can join'
+                            id='team_sidebar.create'
+                            defaultMessage='Create Team'
                         />
                     }
                     content={<i className='icon icon-plus'/>}

@@ -25,6 +25,7 @@ import TeamSettingsModal from 'components/team_settings_modal';
 import Menu from 'components/widgets/menu/menu';
 import { injectIntl } from 'react-intl';
 import TeamMembersModal from 'components/team_members_modal';
+import LockIcon from 'components/widgets/icons/lock_icon';
 
 
 type Actions = {
@@ -54,7 +55,7 @@ class MyTeamItem extends React.PureComponent<Props, State> {
 
     handleTeamClick = (e: MouseEvent): void => {
         e.preventDefault();
-        this.props.onTeamClick(`/${this.props.team.name}`);
+        this.props.onTeamClick && this.props.onTeamClick(`/${this.props.team.name}`);
     }
 
     renderDescriptionTooltip = (): ReactNode => {
@@ -122,6 +123,7 @@ class MyTeamItem extends React.PureComponent<Props, State> {
                 style={{ position: 'absolute', right: 5, top: 2 }}
             >
                 <MenuIcon fillColor='blue' />
+
             </button>
             <Overlay
                 rootClose={true}
@@ -193,7 +195,11 @@ class MyTeamItem extends React.PureComponent<Props, State> {
         return (
             
             <div className='select_team_item col-xs-4' style={container_style}>
+                <div>
+                  { !team.allow_open_invite && <LockIcon style={{ position: 'absolute', left: 5, top: 2}} fillColor='#757575' />}
                 {settingsButton}
+                </div>
+               
                 <a
                     href='#'
                     id={Utils.createSafeId(team.display_name)}
